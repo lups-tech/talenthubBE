@@ -13,5 +13,7 @@ public class Developer
     [Column("created_at")]
 
     public DateTime CreatedAt {get; set;}
+
+    public List<Skill> Skills { get; } = new();
 }
 

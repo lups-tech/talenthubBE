@@ -10,4 +10,5 @@ public class Job
     public String? JobText {get; set;}
     [Column("created_at")]
     public DateTime CreatedAt {get; set;}
+    public List<Skill> Skills { get; } = new();
 }
