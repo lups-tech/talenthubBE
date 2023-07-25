@@ -1,22 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace talenthubBE.Controllers
 {
-  [Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class DevelopersController : ControllerBase
     {
-        private readonly MvcDeveloperContext _context;
+        private readonly MvcDataContext _context;
 
-        public DevelopersController(MvcDeveloperContext context)
+        public DevelopersController(MvcDataContext context)
         {
             _context = context;
         }
 
         // GET: api/Developers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Developer>>> GetDeveloper()
+        public async Task<ActionResult<IEnumerable<Developer>>> GetDevelopers()
         {
           if (_context.Developers == null)
           {
@@ -81,7 +86,7 @@ namespace talenthubBE.Controllers
         {
           if (_context.Developers == null)
           {
-              return Problem("Entity set 'MvcDevelopercontext.Developers'  is null.");
+              return Problem("Entity set 'MvcDataContext.Developers'  is null.");
           }
             _context.Developers.Add(developer);
             await _context.SaveChangesAsync();
