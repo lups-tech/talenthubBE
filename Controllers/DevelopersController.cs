@@ -27,7 +27,7 @@ namespace talenthubBE.Controllers
           {
               return NotFound();
           }
-            return await _context.Developers.ToListAsync();
+            return await _context.Developers.Include("Skills").ToListAsync();
         }
 
         // GET: api/Developers/5

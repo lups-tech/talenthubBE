@@ -1,15 +1,18 @@
-using System.ComponentModel.DataAnnotations.Schema;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
-public class Skill
+namespace talenthubBE.Models
 {
-    [Column("id")]
+    public class SkillView
+    {
     public Guid Id {get; set;}
-    [Column("title")]
     public String? Title {get; set;}
-    [Column("type")]
     public String? Type {get; set;}
-    [Column("created_at")]
     public DateTime CreatedAt {get; set;}
+    [JsonIgnore]
     public ICollection<Developer> Developers { get; set;}
+    }
 }

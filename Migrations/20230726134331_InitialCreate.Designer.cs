@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace talenthubBE.Migrations
 {
     [DbContext(typeof(MvcDataContext))]
-    [Migration("20230725132711_InitialCreate")]
+    [Migration("20230726134331_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -60,7 +60,7 @@ namespace talenthubBE.Migrations
 
                     b.HasIndex("SkillsId");
 
-                    b.ToTable("DeveloperSkill");
+                    b.ToTable("DeveloperSkill", (string)null);
                 });
 
             modelBuilder.Entity("Job", b =>
@@ -85,21 +85,6 @@ namespace talenthubBE.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("JobDescriptions");
-                });
-
-            modelBuilder.Entity("JobSkill", b =>
-                {
-                    b.Property<Guid>("JobsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("SkillsId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("JobsId", "SkillsId");
-
-                    b.HasIndex("SkillsId");
-
-                    b.ToTable("JobSkill");
                 });
 
             modelBuilder.Entity("Skill", b =>
@@ -131,21 +116,6 @@ namespace talenthubBE.Migrations
                     b.HasOne("Developer", null)
                         .WithMany()
                         .HasForeignKey("DevelopersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Skill", null)
-                        .WithMany()
-                        .HasForeignKey("SkillsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("JobSkill", b =>
-                {
-                    b.HasOne("Job", null)
-                        .WithMany()
-                        .HasForeignKey("JobsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
