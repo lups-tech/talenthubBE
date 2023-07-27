@@ -57,7 +57,7 @@ namespace talenthubBE.Controllers
 
             DeveloperDTO developerDTO = developer.ToDevDTO();
 
-            return developerDTO;
+            return Ok(developerDTO);
         }
 
         // PUT: api/Developers/5
