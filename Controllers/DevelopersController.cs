@@ -42,20 +42,22 @@ namespace talenthubBE.Controllers
 
         // GET: api/Developers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Developer>> GetDeveloper(Guid id)
+        public async Task<ActionResult<DeveloperDTO>> GetDeveloper(Guid id)
         {
           if (_context.Developers == null)
           {
               return NotFound();
           }
-            var developer = await _context.Developers.FindAsync(id);
+            var developer = await _context.Developers.Include("Skills").FirstOrDefaultAsync(d => d.Id == id);
 
             if (developer == null)
             {
                 return NotFound();
             }
 
-            return developer;
+            DeveloperDTO developerDTO = developer.ToDevDTO();
+
+            return developerDTO;
         }
 
         // PUT: api/Developers/5
