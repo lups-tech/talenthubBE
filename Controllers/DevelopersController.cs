@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using talenthubBE.Mapping;
+using talenthubBE.Models.Developers;
 
 namespace talenthubBE.Controllers
 {
@@ -21,13 +23,21 @@ namespace talenthubBE.Controllers
 
         // GET: api/Developers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Developer>>> GetDevelopers()
+        public async Task<ActionResult<IEnumerable<DeveloperDTO>>> GetDevelopers()
         {
           if (_context.Developers == null)
           {
               return NotFound();
           }
-            return await _context.Developers.Include("Skills").ToListAsync();
+            var res = await _context.Developers.Include("Skills").ToListAsync();
+
+            List<DeveloperDTO> developers = new();
+            foreach (Developer developer in res)
+            {
+                developers.Add(developer.ToDevDTO());
+            }
+
+            return Ok(developers);
         }
 
         // GET: api/Developers/5
