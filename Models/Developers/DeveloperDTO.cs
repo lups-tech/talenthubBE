@@ -1,0 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace talenthubBE.Models.Developers
+{
+    public class DeveloperDTO
+    {
+    public Guid Id {get; set;}
+    public String? Name {get; set;}
+    public String? Email {get; set;}
+    public ICollection<DevSkillDTO> Skills {get; set;}
+    }
+}
