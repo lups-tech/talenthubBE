@@ -11,6 +11,6 @@ public class Developer
     public String? Email {get; set;}
     [Column("created_at")]
     public DateTime CreatedAt {get; set;}
-    public ICollection<Skill> Skills { get; set;}
+    public ICollection<Skill> Skills { get; } = new List<Skill>();
 }
 
