@@ -11,5 +11,5 @@ public class Skill
     public String? Type {get; set;}
     [Column("created_at")]
     public DateTime CreatedAt {get; set;}
-    public ICollection<Developer> Developers { get; set;}
+    public ICollection<Developer>? Developers { get; set;}
 }

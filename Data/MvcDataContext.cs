@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using talenthubBE.Models.Developers;
 
 public class MvcDataContext : DbContext
     {
