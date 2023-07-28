@@ -10,4 +10,10 @@ namespace talenthubBE.Models.Developers
         public Guid developerId {get; set;}
         public IEnumerable<Guid> selectedSkillIds {get; set;} = default!;
     }
+
+    public class DeleteDeveloperSkillsRequest
+    {
+        public Guid developerId {get; set;}
+        public Guid SkillId {get; set;}
+    }
 }

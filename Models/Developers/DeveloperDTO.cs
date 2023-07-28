@@ -10,6 +10,6 @@ namespace talenthubBE.Models.Developers
     public Guid Id {get; set;}
     public String? Name {get; set;}
     public String? Email {get; set;}
-    public List<DevSkillDTO> Skills {get; set;}
+    public List<DevSkillDTO>? Skills {get; set;}
     }
 }
