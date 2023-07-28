@@ -95,16 +95,17 @@ namespace talenthubBE.Controllers
         // POST: api/Developers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Developer>> PostDeveloper(Developer developer)
+        public async Task<ActionResult<DeveloperDTO>> PostDeveloper(CreateDeveloperRequest developer)
         {
           if (_context.Developers == null)
           {
               return Problem("Entity set 'MvcDataContext.Developers'  is null.");
           }
-            _context.Developers.Add(developer);
+            Developer newDev = developer.ToDev();
+            _context.Developers.Add(newDev);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDeveloper", new { id = developer.Id }, developer);
+            return CreatedAtAction("GetDeveloper", new { id = newDev.Id }, newDev.ToDevDTO());
         }
 
         [HttpPatch("/developerSkills")]

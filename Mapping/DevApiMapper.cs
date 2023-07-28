@@ -27,6 +27,16 @@ namespace talenthubBE.Mapping
                 Type = skill.Type,
             };
         }
+        public static Developer ToDev(this CreateDeveloperRequest newDev)
+        {
+            return new Developer
+            {
+                Id = new Guid(),
+                Name = newDev.Name,
+                Email = newDev.Email,
+                CreatedAt = DateTime.Now,
+            };
+        }
         private static List<DevSkillDTO> SkillsMapper (this ICollection<Skill> skills)
         {
             List<DevSkillDTO> output = new();
