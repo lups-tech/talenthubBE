@@ -34,7 +34,7 @@ namespace talenthubBE.Mapping
                 Id = new Guid(),
                 Name = newDev.Name,
                 Email = newDev.Email,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.Now.ToUniversalTime(),
             };
         }
         private static List<DevSkillDTO> SkillsMapper (this ICollection<Skill> skills)
