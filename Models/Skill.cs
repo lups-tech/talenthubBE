@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 public class Skill
 {
@@ -10,6 +11,5 @@ public class Skill
     public String? Type {get; set;}
     [Column("created_at")]
     public DateTime CreatedAt {get; set;}
-    public List<Job> Jobs { get; } = new();
-    public List<Developer> Developers { get; } = new();
+    public ICollection<Developer>? Developers { get; set;}
 }
