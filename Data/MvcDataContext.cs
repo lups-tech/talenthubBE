@@ -19,5 +19,9 @@ public class MvcDataContext : DbContext
                 .HasMany(ep => ep.Skills)
                 .WithMany(e => e.Developers)
                 .UsingEntity(j => j.ToTable("DeveloperSkill"));
+            modelBuilder.Entity<Job>()
+                .HasMany(ep => ep.Skills)
+                .WithMany(e => e.Jobs)
+                .UsingEntity(j => j.ToTable("JobSkill"));
         }
     }

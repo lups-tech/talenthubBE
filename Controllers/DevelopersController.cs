@@ -89,7 +89,7 @@ namespace talenthubBE.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(developer);
         }
 
         // POST: api/Developers

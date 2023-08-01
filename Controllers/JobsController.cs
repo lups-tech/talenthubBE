@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
+using talenthubBE.Mapping;
+using talenthubBE.Models.Jobs;
 
 namespace talenthubBE.Controllers
 {
@@ -21,37 +19,45 @@ namespace talenthubBE.Controllers
 
         // GET: api/Jobs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJob()
+        public async Task<ActionResult<IEnumerable<JobDTO>>> GetJob()
         {
           if (_context.JobDescriptions == null)
           {
               return NotFound();
           }
-            return await _context.JobDescriptions.ToListAsync();
+            var res = await _context.JobDescriptions.Include("Skills").ToListAsync();
+        
+            List<JobDTO> jobs = new();
+            foreach (Job job in res)
+            {
+                jobs.Add(job.ToJobDTO());
+            }
+
+            return Ok(jobs);
         }
 
         // GET: api/Jobs/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Job>> GetJob(Guid id)
+        public async Task<ActionResult<JobDTO>> GetJob(Guid id)
         {
           if (_context.JobDescriptions == null)
           {
               return NotFound();
           }
-            var job = await _context.JobDescriptions.FindAsync(id);
+            var job = await _context.JobDescriptions.Include("Skills").FirstOrDefaultAsync(j => j.Id == id);
 
             if (job == null)
             {
                 return NotFound();
             }
 
-            return job;
+            return Ok(job.ToJobDTO());
         }
 
         // PUT: api/Jobs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutJob(Guid id, Job job)
+        public async Task<ActionResult<JobDTO>> PutJob(Guid id, Job job)
         {
             if (id != job.Id)
             {
@@ -76,22 +82,35 @@ namespace talenthubBE.Controllers
                 }
             }
 
-            return NoContent();
+            Job newJob = await _context.JobDescriptions.Include("Skills").FirstOrDefaultAsync(j => j.Id == id);
+
+            return Ok(newJob.ToJobDTO());
         }
 
         // POST: api/Jobs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Job>> PostJob(Job job)
+        public async Task<ActionResult<JobDTO>> PostJob(CreateJobRequest request)
         {
           if (_context.JobDescriptions == null)
           {
               return Problem("Entity set 'MvcDeveloperContext.Job'  is null.");
           }
+
+            Job job = request.ToJob();
             _context.JobDescriptions.Add(job);
+            var skillsToAdd = new List<Skill>();
+            foreach (Guid skillId in request.selectedSkillIds)
+            {
+                var currentSkill = _context.Skills
+                    .Single(skill => skill.Id == skillId);
+                skillsToAdd.Add(currentSkill);
+            }
+
+            job.Skills.AddRange(skillsToAdd);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetJob", new { id = job.Id }, job);
+            return CreatedAtAction("GetJob", new { id = job.Id }, job.ToJobDTO());
         }
 
         // DELETE: api/Jobs/5
