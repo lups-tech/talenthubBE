@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using talenthubBE.Mapping;
+using talenthubBE.Models.Skills;
 
 namespace talenthubBE.Controllers
 {
@@ -21,18 +23,24 @@ namespace talenthubBE.Controllers
 
         // GET: api/Skills
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Skill>>> GetSkills()
+        public async Task<ActionResult<IEnumerable<SkillDTO>>> GetSkills()
         {
           if (_context.Skills == null)
           {
               return NotFound();
           }
-            return await _context.Skills.ToListAsync();
+            var response = await _context.Skills.ToListAsync();
+            List<SkillDTO> skills = new();
+            foreach(Skill skill in response)
+            {
+                skills.Add(skill.ToSkillDTO());
+            }
+            return Ok(skills);
         }
 
         // GET: api/Skills/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Skill>> GetSkill(Guid id)
+        public async Task<ActionResult<SkillDTO>> GetSkill(Guid id)
         {
           if (_context.Skills == null)
           {
@@ -45,13 +53,13 @@ namespace talenthubBE.Controllers
                 return NotFound();
             }
 
-            return skill;
+            return Ok(skill.ToSkillDTO());
         }
 
         // PUT: api/Skills/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSkill(Guid id, Skill skill)
+        public async Task<ActionResult<SkillDTO>> PutSkill(Guid id, Skill skill)
         {
             if (id != skill.Id)
             {
@@ -76,13 +84,13 @@ namespace talenthubBE.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(skill.ToSkillDTO());
         }
 
         // POST: api/Skills
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Skill>> PostSkill(Skill skill)
+        public async Task<ActionResult<SkillDTO>> PostSkill(Skill skill)
         {
           if (_context.Skills == null)
           {
@@ -91,7 +99,7 @@ namespace talenthubBE.Controllers
             _context.Skills.Add(skill);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSkill", new { id = skill.Id }, skill);
+            return CreatedAtAction("GetSkill", new { id = skill.Id }, skill.ToSkillDTO());
         }
 
         // DELETE: api/Skills/5
