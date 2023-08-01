@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -130,11 +131,23 @@ namespace talenthubBE.Controllers
         [HttpGet("/scraper")]
          public async Task<IActionResult> ScrapeSkills(String text)
         {
-            var skills = await GetSkills();
-
-            IEnumerable<SkillDTO> jobSkillList =
-                from skill in skills
-                select skill.Title;
+            var data = await _context.Skills.ToListAsync<Skill>();
+            var query = data.Select(skill => regexGenerator(skill.Title));
+            List<SkillDTO> jobSkills = new();
+            int index = 0;
+            foreach(Regex skill in query)
+            {
+                if(skill.Match(text).Success)
+                {
+                    jobSkills.Add(data[index].ToSkillDTO());
+                }
+                index++;
+            }
+            return Ok(jobSkills);
+        }
+        private Regex regexGenerator(string title)
+        {
+            return new Regex(pattern: title, RegexOptions.IgnoreCase);
         }
     }
 }
