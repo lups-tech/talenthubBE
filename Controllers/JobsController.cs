@@ -82,9 +82,9 @@ namespace talenthubBE.Controllers
                 }
             }
 
-            Job newJob = await _context.JobDescriptions.Include("Skills").FirstOrDefaultAsync(j => j.Id == id);
+            Job? newJob = await _context.JobDescriptions.Include("Skills").FirstOrDefaultAsync(j => j.Id == id);
 
-            return Ok(newJob.ToJobDTO());
+            return Ok(newJob!.ToJobDTO());
         }
 
         // POST: api/Jobs
