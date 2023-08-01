@@ -126,5 +126,15 @@ namespace talenthubBE.Controllers
         {
             return (_context.Skills?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        [HttpGet("/scraper")]
+         public async Task<IActionResult> ScrapeSkills(String text)
+        {
+            var skills = await GetSkills();
+
+            IEnumerable<SkillDTO> jobSkillList =
+                from skill in skills
+                select skill.Title;
+        }
     }
 }
