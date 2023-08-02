@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using talenthubBE.Mapping;
+using talenthubBE.Models.Developers;
 using talenthubBE.Models.Skills;
 
 namespace talenthubBE.Controllers
@@ -129,21 +130,43 @@ namespace talenthubBE.Controllers
         }
 
         [HttpGet("/scraper")]
-         public async Task<IActionResult> ScrapeSkills(String text)
+         public async Task<ActionResult<SkillScraperResponse>> ScrapeSkills(String text)
         {
-            var data = await _context.Skills.ToListAsync<Skill>();
-            var query = data.Select(skill => regexGenerator(skill.Title));
+            var skillData = await _context.Skills.ToListAsync<Skill>();
+            var skillQuery = skillData.Select(skill => regexGenerator(skill.Title));
             List<SkillDTO> jobSkills = new();
             int index = 0;
-            foreach(Regex skill in query)
+            foreach(Regex skill in skillQuery)
             {
                 if(skill.Match(text).Success)
                 {
-                    jobSkills.Add(data[index].ToSkillDTO());
+                    jobSkills.Add(skillData[index].ToSkillDTO());
                 }
                 index++;
             }
-            return Ok(jobSkills);
+
+            var devData = await _context.Developers.Include("Skills").ToListAsync<Developer>();
+            
+            List<DeveloperDTO> devByMatch = new();
+            
+            foreach(Developer dev in devData)
+            {
+                DeveloperDTO listedDev = dev.ToDevDTO();
+                listedDev.skillMatch = jobSkills
+                    .IntersectBy(dev.Skills.Select(s => s.Id), s => s.Id)
+                    .Count();
+                
+                devByMatch.Add(listedDev);
+            }
+            
+            return Ok(new SkillScraperResponse
+                {
+                    JobSkills = jobSkills,
+                    Developers = devByMatch
+                        .Where(dev => dev.skillMatch > 0)
+                        .OrderByDescending(dev => dev.skillMatch)
+                        .ToList()
+                });
         }
         private Regex regexGenerator(string title)
         {
