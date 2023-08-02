@@ -25,7 +25,7 @@ This project has been built by the following developers:
 - [Panisara Bunawan Dachin](https://github.com/panisara-bd)
 - [Stephen Moore](https://github.com/SMooreSwe)
 
-Together we are Lups-Tech.
+Together we are [Lups-Tech](https://github.com/lups-tech).
 
 ## Next Steps
 We are approaching this project with an agile approach, consisting of 1 week sprint goals. At present, both frontend and backend are not yet deployed, though we hope to address this once authorization is properly integrated.
