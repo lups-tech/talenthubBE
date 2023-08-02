@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using talenthubBE.Mapping;
+using talenthubBE.Models.Developers;
 using talenthubBE.Models.Skills;
 
 namespace talenthubBE.Controllers
@@ -125,6 +127,50 @@ namespace talenthubBE.Controllers
         private bool SkillExists(Guid id)
         {
             return (_context.Skills?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [HttpGet("/scraper")]
+         public async Task<ActionResult<SkillScraperResponse>> ScrapeSkills(String text)
+        {
+            var skillData = await _context.Skills.ToListAsync<Skill>();
+            var skillQuery = skillData.Select(skill => regexGenerator(skill.Title));
+            List<SkillDTO> jobSkills = new();
+            int index = 0;
+            foreach(Regex skill in skillQuery)
+            {
+                if(skill.Match(text).Success)
+                {
+                    jobSkills.Add(skillData[index].ToSkillDTO());
+                }
+                index++;
+            }
+
+            var devData = await _context.Developers.Include("Skills").ToListAsync<Developer>();
+            
+            List<DeveloperDTO> devByMatch = new();
+            
+            foreach(Developer dev in devData)
+            {
+                DeveloperDTO listedDev = dev.ToDevDTO();
+                listedDev.skillMatch = jobSkills
+                    .IntersectBy(dev.Skills.Select(s => s.Id), s => s.Id)
+                    .Count();
+                
+                devByMatch.Add(listedDev);
+            }
+            
+            return Ok(new SkillScraperResponse
+                {
+                    JobSkills = jobSkills,
+                    Developers = devByMatch
+                        .Where(dev => dev.skillMatch > 0)
+                        .OrderByDescending(dev => dev.skillMatch)
+                        .ToList()
+                });
+        }
+        private Regex regexGenerator(string title)
+        {
+            return new Regex(pattern: title, RegexOptions.IgnoreCase);
         }
     }
 }
