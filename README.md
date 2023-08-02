@@ -7,7 +7,7 @@ The frontend for this project can be found [here](https://github.com/lups-tech/d
 ## The Database
 This backend is connected to a project hosted on Supabase. The project is therefore based on a PostgreSQL database.
 
-Given that we are using this project to hone our .Net, ASP Net and C# skills, the decision was made to connect to the Supabase database via a connection string, rather than the scoped Supabase client (previous iterations of the backend used the scoped client and a minimal webAPI pattern for proof of concept testing, as can be seen [here](https://github.com/lups-tech/supabasecsharpapi),[here](https://github.com/lups-tech/supabaseJobAPI) and [here](https://github.com/lups-tech/supabaseDevAPI).
+Given that we are using this project to hone our .Net, ASP Net and C# skills, the decision was made to connect to the Supabase database via a connection string, rather than the scoped Supabase client (previous iterations of the backend used the scoped client and a minimal webAPI pattern for proof of concept testing, as can be seen [here](https://github.com/lups-tech/supabasecsharpapi), [here](https://github.com/lups-tech/supabaseJobAPI) and [here](https://github.com/lups-tech/supabaseDevAPI).
 
 ## The Endpoints
 Given the need to have many developers with many skills matched with many jobs (also requiring many skills), we have separated the controllers for Developers, Skills and Jobs.
@@ -25,7 +25,7 @@ This project has been built by the following developers:
 - [Panisara Bunawan Dachin](https://github.com/panisara-bd)
 - [Stephen Moore](https://github.com/SMooreSwe)
 
-Together we are Lups-Tech
+Together we are Lups-Tech.
 
 ## Next Steps
 We are approaching this project with an agile approach, consisting of 1 week sprint goals. At present, both frontend and backend are not yet deployed, though we hope to address this once authorization is properly integrated.
