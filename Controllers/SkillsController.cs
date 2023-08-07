@@ -133,7 +133,7 @@ namespace talenthubBE.Controllers
          public async Task<ActionResult<SkillScraperResponse>> ScrapeSkills(String text)
         {
             var skillData = await _context.Skills.ToListAsync<Skill>();
-            var skillQuery = skillData.Select(skill => regexGenerator(skill.Title));
+            var skillQuery = skillData.Select(skill => RegexGenerator(skill.Title));
             List<SkillDTO> jobSkills = new();
             int index = 0;
             foreach(Regex skill in skillQuery)
@@ -152,7 +152,7 @@ namespace talenthubBE.Controllers
             foreach(Developer dev in devData)
             {
                 DeveloperDTO listedDev = dev.ToDevDTO();
-                listedDev.skillMatch = jobSkills
+                listedDev.SkillMatch = jobSkills
                     .IntersectBy(dev.Skills.Select(s => s.Id), s => s.Id)
                     .Count();
                 
@@ -163,12 +163,12 @@ namespace talenthubBE.Controllers
                 {
                     JobSkills = jobSkills,
                     Developers = devByMatch
-                        .Where(dev => dev.skillMatch > 0)
-                        .OrderByDescending(dev => dev.skillMatch)
+                        .Where(dev => dev.SkillMatch > 0)
+                        .OrderByDescending(dev => dev.SkillMatch)
                         .ToList()
                 });
         }
-        private Regex regexGenerator(string title)
+        private Regex RegexGenerator(string title)
         {
             return new Regex(pattern: title, RegexOptions.IgnoreCase);
         }

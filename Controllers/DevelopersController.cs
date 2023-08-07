@@ -111,16 +111,16 @@ namespace talenthubBE.Controllers
         [HttpPatch("/developerSkills")]
         public async Task<ActionResult<DeveloperDTO>> AddDeveloperSkills(CreateDeveloperSkillsRequest request)
         {
-            if (!DeveloperExists(request.developerId))
+            if (!DeveloperExists(request.DeveloperId))
             {
                 return NotFound();
             }
             Developer developer = _context.Developers
                 .Include("Skills")
-                .First(d => d.Id == request.developerId);
+                .First(d => d.Id == request.DeveloperId);
             
             var skillsToAdd = new List<Skill>();
-            foreach (Guid skillId in request.selectedSkillIds)
+            foreach (Guid skillId in request.SelectedSkillIds)
             {
                 var currentSkill = _context.Skills
                     .Single(skill => skill.Id == skillId);
@@ -156,13 +156,13 @@ namespace talenthubBE.Controllers
         [HttpDelete("/developerskills")]
         public async Task<IActionResult> DeleteDeveloperSkills(DeleteDeveloperSkillsRequest request)
         {
-            if (!DeveloperExists(request.developerId))
+            if (!DeveloperExists(request.DeveloperId))
             {
                 return NotFound();
             }
             Developer developer = _context.Developers
                 .Include("Skills")
-                .First(d => d.Id == request.developerId);
+                .First(d => d.Id == request.DeveloperId);
 
             Skill skilltoRemove = developer.Skills
                 .Single(skill => skill.Id == request.SkillId);

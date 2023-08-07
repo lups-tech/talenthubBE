@@ -100,7 +100,7 @@ namespace talenthubBE.Controllers
             Job job = request.ToJob();
             _context.JobDescriptions.Add(job);
             var skillsToAdd = new List<Skill>();
-            foreach (Guid skillId in request.selectedSkillIds)
+            foreach (Guid skillId in request.SelectedSkillIds)
             {
                 var currentSkill = _context.Skills
                     .Single(skill => skill.Id == skillId);
