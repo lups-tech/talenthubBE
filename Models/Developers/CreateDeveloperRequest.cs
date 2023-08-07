@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 public class CreateDeveloperRequest
 {
+    [Required]
     public String? Name {get; set;}
+    [Required]
     public String? Email {get; set;}
 }

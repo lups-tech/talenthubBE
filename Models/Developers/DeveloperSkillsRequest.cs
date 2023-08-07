@@ -13,7 +13,9 @@ namespace talenthubBE.Models.Developers
 
     public class DeleteDeveloperSkillsRequest
     {
+        [Required]
         public Guid developerId {get; set;}
+        [Required]
         public Guid SkillId {get; set;}
     }
 }
