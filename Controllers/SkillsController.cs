@@ -130,7 +130,7 @@ namespace talenthubBE.Controllers
         }
 
         [HttpPost("/scraper")]
-         public async Task<ActionResult<SkillScraperResponse>> ScrapeSkills([FromBody] String text)
+         public async Task<ActionResult<SkillScraperResponse>> ScrapeSkills([FromBody] SkillScraperRequest text)
         {
             var skillData = await _context.Skills.ToListAsync<Skill>();
             var skillQuery = skillData.Select(skill => RegexGenerator(skill.Title));
@@ -138,7 +138,7 @@ namespace talenthubBE.Controllers
             int index = 0;
             foreach(Regex skill in skillQuery)
             {
-                if(skill.Match(text).Success)
+                if(skill.Match(text.Description).Success)
                 {
                     jobSkills.Add(skillData[index].ToSkillDTO());
                 }
