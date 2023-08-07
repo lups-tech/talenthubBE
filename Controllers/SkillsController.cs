@@ -129,8 +129,8 @@ namespace talenthubBE.Controllers
             return (_context.Skills?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        [HttpGet("/scraper")]
-         public async Task<ActionResult<SkillScraperResponse>> ScrapeSkills(String text)
+        [HttpPost("/scraper")]
+         public async Task<ActionResult<SkillScraperResponse>> ScrapeSkills([FromBody] String text)
         {
             var skillData = await _context.Skills.ToListAsync<Skill>();
             var skillQuery = skillData.Select(skill => RegexGenerator(skill.Title));
