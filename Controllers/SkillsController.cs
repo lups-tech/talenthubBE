@@ -92,16 +92,17 @@ namespace talenthubBE.Controllers
         // POST: api/Skills
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<SkillDTO>> PostSkill(Skill skill)
+        public async Task<ActionResult<SkillDTO>> PostSkill(CreateSkillRequest skill)
         {
           if (_context.Skills == null)
           {
               return Problem("Entity set 'MvcDataContext.Skills'  is null.");
           }
-            _context.Skills.Add(skill);
+            Skill skillToAdd = skill.ToSkill();
+            _context.Skills.Add(skillToAdd);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSkill", new { id = skill.Id }, skill.ToSkillDTO());
+            return CreatedAtAction("GetSkill", new { id = skillToAdd.Id }, skillToAdd.ToSkillDTO());
         }
 
         // DELETE: api/Skills/5

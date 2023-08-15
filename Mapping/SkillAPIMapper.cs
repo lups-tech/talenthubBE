@@ -17,5 +17,16 @@ namespace talenthubBE.Mapping
                 Type = skill.Type
             };
         }
+
+        public static Skill ToSkill (this CreateSkillRequest newSkill)
+        {
+            return new Skill
+            {
+                Id = new Guid(),
+                Title = newSkill.Title,
+                Type = newSkill.Type,
+                CreatedAt = DateTime.Now.ToUniversalTime(),
+            };
+        }
     }
 }
