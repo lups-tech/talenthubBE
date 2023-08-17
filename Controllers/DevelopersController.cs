@@ -108,7 +108,7 @@ namespace talenthubBE.Controllers
             return CreatedAtAction("GetDeveloper", new { id = newDev.Id }, newDev.ToDevDTO());
         }
 
-        [HttpPatch("/developerSkills")]
+        [HttpPatch("/api/developerSkills")]
         public async Task<ActionResult<DeveloperDTO>> AddDeveloperSkills(CreateDeveloperSkillsRequest request)
         {
             if (!DeveloperExists(request.DeveloperId))
@@ -153,7 +153,7 @@ namespace talenthubBE.Controllers
             return NoContent();
         }
 
-        [HttpDelete("/developerskills")]
+        [HttpDelete("/api/developerskills")]
         public async Task<IActionResult> DeleteDeveloperSkills(DeleteDeveloperSkillsRequest request)
         {
             if (!DeveloperExists(request.DeveloperId))
