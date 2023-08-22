@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using talenthubBE.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MvcDataContext>(options =>
     options.UseNpgsql(builder.Configuration["ConnectionString"] ?? throw new InvalidOperationException("Connection string 'MvcDataContext' not found.")));
@@ -8,6 +10,7 @@ builder.Services.AddDbContext<MvcDataContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IJobsRepository, JobsRepository>();
 // CORS
 // var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 // builder.Services.AddCors(options =>

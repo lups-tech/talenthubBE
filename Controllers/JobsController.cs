@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Packaging;
-using talenthubBE.Mapping;
+using talenthubBE.Data;
 using talenthubBE.Models.Jobs;
 
 namespace talenthubBE.Controllers
@@ -10,48 +9,35 @@ namespace talenthubBE.Controllers
     [ApiController]
     public class JobsController : ControllerBase
     {
-        private readonly MvcDataContext _context;
+        private IJobsRepository _repository;
 
-        public JobsController(MvcDataContext context)
+        public JobsController(IJobsRepository jobsRepository)
         {
-            _context = context;
+            _repository = jobsRepository;
         }
 
         // GET: api/Jobs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobDTO>>> GetJob()
+        public async Task<ActionResult<IEnumerable<JobDTO>>> GetJobs()
         {
-          if (_context.JobDescriptions == null)
+          IEnumerable<JobDTO>? response = await _repository.GetAllJobs();
+          if(response == null)
           {
-              return NotFound();
+            return NotFound();
           }
-            var res = await _context.JobDescriptions.Include("Skills").ToListAsync();
-        
-            List<JobDTO> jobs = new();
-            foreach (Job job in res)
-            {
-                jobs.Add(job.ToJobDTO());
-            }
-
-            return Ok(jobs);
+            return Ok(response);
         }
 
         // GET: api/Jobs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<JobDTO>> GetJob(Guid id)
         {
-          if (_context.JobDescriptions == null)
-          {
-              return NotFound();
-          }
-            var job = await _context.JobDescriptions.Include("Skills").FirstOrDefaultAsync(j => j.Id == id);
-
-            if (job == null)
+            JobDTO? response = await _repository.GetJob(id);
+            if (response == null)
             {
                 return NotFound();
             }
-
-            return Ok(job.ToJobDTO());
+            return Ok(response);
         }
 
         // PUT: api/Jobs/5
@@ -64,27 +50,23 @@ namespace talenthubBE.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(job).State = EntityState.Modified;
-
+            JobDTO? response = await _repository.PutJob(id, job);
             try
             {
-                await _context.SaveChangesAsync();
+                return Ok(response);
             }
-            catch (DbUpdateConcurrencyException)
+            catch(Exception e)
             {
-                if (!JobExists(id))
+                if(e.GetType() == typeof(DbUpdateConcurrencyException))
                 {
-                    return NotFound();
+                    return Conflict(new {message = "There has been an issue handling your request"});
                 }
                 else
                 {
-                    throw;
+                    return NotFound(e.Message);
                 }
             }
-
-            Job? newJob = await _context.JobDescriptions.Include("Skills").FirstOrDefaultAsync(j => j.Id == id);
-
-            return Ok(newJob!.ToJobDTO());
+            
         }
 
         // POST: api/Jobs
@@ -92,50 +74,28 @@ namespace talenthubBE.Controllers
         [HttpPost]
         public async Task<ActionResult<JobDTO>> PostJob(CreateJobRequest request)
         {
-          if (_context.JobDescriptions == null)
-          {
-              return Problem("Entity set 'MvcDeveloperContext.Job'  is null.");
-          }
-
-            Job job = request.ToJob();
-            _context.JobDescriptions.Add(job);
-            var skillsToAdd = new List<Skill>();
-            foreach (Guid skillId in request.SelectedSkillIds)
+            JobDTO? response = await _repository.PostJob(request);
+            if(response == null)
             {
-                var currentSkill = _context.Skills
-                    .Single(skill => skill.Id == skillId);
-                skillsToAdd.Add(currentSkill);
+                return NotFound();
             }
 
-            job.Skills.AddRange(skillsToAdd);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetJob", new { id = job.Id }, job.ToJobDTO());
+            return CreatedAtAction("GetJob", new { id = response.Id }, response);
         }
 
         // DELETE: api/Jobs/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJob(Guid id)
         {
-            if (_context.JobDescriptions == null)
+            try
             {
-                return NotFound();
+                await _repository.DeleteJob(id);
             }
-            var job = await _context.JobDescriptions.FindAsync(id);
-            if (job == null)
+            catch (Exception e)
             {
-                return NotFound();
+                return NotFound(e.Message);
             }
-
-            _context.JobDescriptions.Remove(job);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool JobExists(Guid id)
-        {
-            return (_context.JobDescriptions?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
