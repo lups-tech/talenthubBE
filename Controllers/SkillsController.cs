@@ -1,9 +1,6 @@
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using talenthubBE.Data;
-using talenthubBE.Mapping;
-using talenthubBE.Models.Developers;
 using talenthubBE.Models.Skills;
 
 namespace talenthubBE.Controllers
@@ -12,7 +9,7 @@ namespace talenthubBE.Controllers
     [ApiController]
     public class SkillsController : ControllerBase
     {
-         private ISkillsRepository _repository;
+         private readonly ISkillsRepository _repository;
 
         public SkillsController(ISkillsRepository skillsRepository)
         {

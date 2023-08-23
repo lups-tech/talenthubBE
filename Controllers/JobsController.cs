@@ -9,7 +9,7 @@ namespace talenthubBE.Controllers
     [ApiController]
     public class JobsController : ControllerBase
     {
-        private IJobsRepository _repository;
+        private readonly IJobsRepository _repository;
 
         public JobsController(IJobsRepository jobsRepository)
         {
