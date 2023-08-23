@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using talenthubBE.Data;
 using talenthubBE.Models.Skills;
 
