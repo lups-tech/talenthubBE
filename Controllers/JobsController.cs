@@ -63,7 +63,7 @@ namespace talenthubBE.Controllers
                 }
                 else
                 {
-                    return NotFound(e.Message);
+                    return NotFound(new {message = e.Message});
                 }
             }
             
@@ -93,7 +93,7 @@ namespace talenthubBE.Controllers
             }
             catch (Exception e)
             {
-                return NotFound(e.Message);
+                return NotFound(new {message = e.Message});
             }
             return NoContent();
         }

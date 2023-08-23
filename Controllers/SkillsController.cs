@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using talenthubBE.Data;
 using talenthubBE.Mapping;
 using talenthubBE.Models.Developers;
 using talenthubBE.Models.Skills;
@@ -11,46 +12,35 @@ namespace talenthubBE.Controllers
     [ApiController]
     public class SkillsController : ControllerBase
     {
-        private readonly MvcDataContext _context;
+         private ISkillsRepository _repository;
 
-        public SkillsController(MvcDataContext context)
+        public SkillsController(ISkillsRepository skillsRepository)
         {
-            _context = context;
+            _repository = skillsRepository;
         }
 
         // GET: api/Skills
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SkillDTO>>> GetSkills()
         {
-          if (_context.Skills == null)
-          {
-              return NotFound();
-          }
-            var response = await _context.Skills.ToListAsync();
-            List<SkillDTO> skills = new();
-            foreach(Skill skill in response)
+            IEnumerable<SkillDTO>? response = await _repository.GetAllSkills();
+            if(response == null)
             {
-                skills.Add(skill.ToSkillDTO());
+                return NotFound();
             }
-            return Ok(skills);
+            return Ok(response);
         }
 
         // GET: api/Skills/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SkillDTO>> GetSkill(Guid id)
         {
-          if (_context.Skills == null)
-          {
-              return NotFound();
-          }
-            var skill = await _context.Skills.FindAsync(id);
-
-            if (skill == null)
+            SkillDTO? response = await _repository.GetSkill(id);
+            if (response == null)
             {
                 return NotFound();
             }
-
-            return Ok(skill.ToSkillDTO());
+            return Ok(response);
         }
 
         // PUT: api/Skills/5
@@ -63,110 +53,64 @@ namespace talenthubBE.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(skill).State = EntityState.Modified;
-
+            SkillDTO? response = await _repository.PutSkill(id, skill);
             try
             {
-                await _context.SaveChangesAsync();
+                return Ok(response);
             }
-            catch (DbUpdateConcurrencyException)
+            catch(Exception e)
             {
-                if (!SkillExists(id))
+                if(e.GetType() == typeof(DbUpdateConcurrencyException))
                 {
-                    return NotFound();
+                    return Conflict(new {message = "There has been an issue handling your request"});
                 }
                 else
                 {
-                    throw;
+                    return NotFound(new {message = e.Message});
                 }
             }
-
-            return Ok(skill.ToSkillDTO());
         }
 
         // POST: api/Skills
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<SkillDTO>> PostSkill(CreateSkillRequest skill)
+        public async Task<ActionResult<SkillDTO>> PostSkill(CreateSkillRequest request)
         {
-          if (_context.Skills == null)
-          {
-              return Problem("Entity set 'MvcDataContext.Skills'  is null.");
-          }
-            Skill skillToAdd = skill.ToSkill();
-            _context.Skills.Add(skillToAdd);
-            await _context.SaveChangesAsync();
+            SkillDTO? response = await _repository.PostSkill(request);
+            if(response == null)
+            {
+                return NotFound();
+            }
 
-            return CreatedAtAction("GetSkill", new { id = skillToAdd.Id }, skillToAdd.ToSkillDTO());
+            return CreatedAtAction("GetJob", new { id = response.Id }, response);
         }
 
         // DELETE: api/Skills/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSkill(Guid id)
         {
-            if (_context.Skills == null)
+            try
             {
-                return NotFound();
+                await _repository.DeleteSkill(id);
             }
-            var skill = await _context.Skills.FindAsync(id);
-            if (skill == null)
+            catch (Exception e)
             {
-                return NotFound();
+                return NotFound(new {message = e.Message});
             }
-
-            _context.Skills.Remove(skill);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool SkillExists(Guid id)
-        {
-            return (_context.Skills?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         [HttpPost("/scraper")]
          public async Task<ActionResult<SkillScraperResponse>> ScrapeSkills([FromBody] SkillScraperRequest text)
         {
-            var skillData = await _context.Skills.ToListAsync<Skill>();
-            var skillQuery = skillData.Select(skill => RegexGenerator(skill.Title));
-            List<SkillDTO> jobSkills = new();
-            int index = 0;
-            foreach(Regex skill in skillQuery)
+            IEnumerable<SkillDTO> response = await _repository.ScrapeSkills(text);
+            if(response.Count() < 0)
             {
-                if(skill.Match(text.Description).Success)
-                {
-                    jobSkills.Add(skillData[index].ToSkillDTO());
-                }
-                index++;
+                return NoContent();
             }
-
-            var devData = await _context.Developers.Include("Skills").ToListAsync<Developer>();
+            SkillScraperResponse? devMatch = await _repository.SkillMatchDevs(response);
             
-            List<DeveloperDTO> devByMatch = new();
-            
-            foreach(Developer dev in devData)
-            {
-                DeveloperDTO listedDev = dev.ToDevDTO();
-                listedDev.SkillMatch = jobSkills
-                    .IntersectBy(dev.Skills.Select(s => s.Id), s => s.Id)
-                    .Count();
-                
-                devByMatch.Add(listedDev);
-            }
-            
-            return Ok(new SkillScraperResponse
-                {
-                    JobSkills = jobSkills,
-                    Developers = devByMatch
-                        .Where(dev => dev.SkillMatch > 0)
-                        .OrderByDescending(dev => dev.SkillMatch)
-                        .ToList()
-                });
-        }
-        private Regex RegexGenerator(string title)
-        {
-            return new Regex(pattern: title, RegexOptions.IgnoreCase);
+            return Ok(devMatch);
         }
     }
 }

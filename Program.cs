@@ -11,6 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IJobsRepository, JobsRepository>();
+builder.Services.AddScoped<ISkillsRepository, SkillsRepository>();
 // CORS
 // var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 // builder.Services.AddCors(options =>
