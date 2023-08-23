@@ -52,7 +52,7 @@ namespace talenthubBE.Data
             {
                 if (!JobExists(id))
                 {
-                    throw new Exception("Job Does not exist");
+                    return null;
                 }
                 else
                 {
@@ -95,7 +95,7 @@ namespace talenthubBE.Data
             var job = _context.JobDescriptions.Find(id);
             if (job == null)
             {
-                throw new Exception("job not found");
+                return;
             }
 
             _context.JobDescriptions.Remove(job);

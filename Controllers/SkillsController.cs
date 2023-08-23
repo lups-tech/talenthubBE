@@ -49,22 +49,18 @@ namespace talenthubBE.Controllers
             {
                 return BadRequest();
             }
-
             SkillDTO? response = await _repository.PutSkill(id, skill);
+            if(response == null)
+            {
+                return NotFound(new {message = "No such skill found"});
+            }
             try
             {
                 return Ok(response);
             }
-            catch(Exception e)
+            catch(Exception)
             {
-                if(e.GetType() == typeof(DbUpdateConcurrencyException))
-                {
-                    return Conflict(new {message = "There has been an issue handling your request"});
-                }
-                else
-                {
-                    return NotFound(new {message = e.Message});
-                }
+                return Conflict(new {message = "There has been an issue handling your request"});
             }
         }
 

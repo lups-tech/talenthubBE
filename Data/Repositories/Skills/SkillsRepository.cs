@@ -44,7 +44,7 @@ namespace talenthubBE.Data
         {
             _context.Entry(skill).State = EntityState.Modified;
 
-             try
+            try
             {
                 await _context.SaveChangesAsync();
             }
@@ -52,7 +52,7 @@ namespace talenthubBE.Data
             {
                 if (!SkillExists(id))
                 {
-                    throw new Exception("Job Does not exist");
+                    return null;
                 }
                 else
                 {
