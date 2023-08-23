@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuGet.Packaging;
 using talenthubBE.Data;
-using talenthubBE.Mapping;
 using talenthubBE.Models.Developers;
 
 namespace talenthubBE.Controllers
