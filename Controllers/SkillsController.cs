@@ -100,7 +100,7 @@ namespace talenthubBE.Controllers
             {
                 return NoContent();
             }
-            SkillScraperResponse? devMatch = await _repository.SkillMatchDevs(response);
+            SkillScraperResponse devMatch = await _repository.SkillMatchDevs(response);
             
             return Ok(devMatch);
         }

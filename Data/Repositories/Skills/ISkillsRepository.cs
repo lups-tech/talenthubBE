@@ -10,6 +10,6 @@ namespace talenthubBE.Data
         Task<SkillDTO?> PostSkill(CreateSkillRequest request);
         Task DeleteSkill(Guid id);
         Task<IEnumerable<SkillDTO>> ScrapeSkills(SkillScraperRequest text);
-        Task<SkillScraperResponse?> SkillMatchDevs(IEnumerable<SkillDTO> jobSkills);
+        Task<SkillScraperResponse> SkillMatchDevs(IEnumerable<SkillDTO> jobSkills);
     }
 }

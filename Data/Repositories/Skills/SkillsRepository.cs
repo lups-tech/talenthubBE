@@ -106,7 +106,7 @@ namespace talenthubBE.Data
             }
             return jobSkills;
         }
-        public async Task<SkillScraperResponse?> SkillMatchDevs(IEnumerable<SkillDTO> jobSkills)
+        public async Task<SkillScraperResponse> SkillMatchDevs(IEnumerable<SkillDTO> jobSkills)
         {
             var devData = await _context.Developers.Include("Skills").ToListAsync<Developer>();
             
