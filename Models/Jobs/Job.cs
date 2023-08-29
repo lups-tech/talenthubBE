@@ -4,6 +4,8 @@ public class Job
 {
     [Column("id")]
     public Guid Id {get; set;}
+    [Column("jobTech_id")]
+    public string? JobTechId {get; set;}
     [Column("url")]
     public String? Url {get; set;}
     [Column("job_text")]

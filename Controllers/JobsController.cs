@@ -72,7 +72,7 @@ namespace talenthubBE.Controllers
             JobDTO? response = await _repository.PostJob(request);
             if(response == null)
             {
-                return NotFound();
+                return Conflict(new {message = "Job already saved"});
             }
 
             return CreatedAtAction("GetJob", new { id = response.Id }, response);

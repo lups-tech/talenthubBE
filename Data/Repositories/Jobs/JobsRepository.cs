@@ -66,7 +66,7 @@ namespace talenthubBE.Data
         }
         public async Task<JobDTO?> PostJob(CreateJobRequest request)
         {
-            if (_context.JobDescriptions == null)
+            if (_context.JobDescriptions.Any(j => j.JobTechId == request.JobTechId))
             {
                 return null;
             }
