@@ -5,6 +5,7 @@ using talenthubBE.Models.Developers;
 
 namespace talenthubBE.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DevelopersController : ControllerBase
