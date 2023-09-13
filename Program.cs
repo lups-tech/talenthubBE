@@ -27,14 +27,11 @@ builder.Services.AddSwaggerGen(c =>
         {
             Implicit = new OpenApiOAuthFlow
             {
-                Scopes = new Dictionary<string, string>
-                {
-                    { "openid", "Open Id" }
-                },
                 AuthorizationUrl = new Uri(builder.Configuration["Auth0:Domain"] + "authorize?audience=" + builder.Configuration["Auth0:Audience"])
             }
         }
     });
+    c.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -49,7 +46,7 @@ builder.Services.AddScoped<IJobsRepository, JobsRepository>();
 builder.Services.AddScoped<ISkillsRepository, SkillsRepository>();
 builder.Services.AddScoped<IDevelopersRepository, DevelopersRepository>();
 // CORS
-// var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 // builder.Services.AddCors(options =>
 // {
 //     options.AddPolicy(name: MyAllowSpecificOrigins,
