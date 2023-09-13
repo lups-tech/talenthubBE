@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using talenthubBE.Models.Developers;
+using talenthubBE.Models;
 
 public class MvcDataContext : DbContext
     {
@@ -13,15 +13,6 @@ public class MvcDataContext : DbContext
         public DbSet<Job> JobDescriptions { get; set; } = default!;
 
         public DbSet<Skill> Skills { get; set; } = default!;
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Developer>()
-                .HasMany(ep => ep.Skills)
-                .WithMany(e => e.Developers)
-                .UsingEntity(j => j.ToTable("DeveloperSkill"));
-            modelBuilder.Entity<Job>()
-                .HasMany(ep => ep.Skills)
-                .WithMany(e => e.Jobs)
-                .UsingEntity(j => j.ToTable("JobSkill"));
-        }
+
+        public DbSet<User> Users { get; set; } = default!;
     }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using talenthubBE.Models;
 
 public class Job
 {
@@ -13,4 +14,5 @@ public class Job
     [Column("created_at")]
     public DateTime CreatedAt {get; set;}
     public ICollection<Skill> Skills { get; } = new List<Skill>();
+    public ICollection<User> Users { get; } = new List<User>();
 }

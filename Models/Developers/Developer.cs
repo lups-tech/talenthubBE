@@ -12,5 +12,7 @@ public class Developer
     [Column("created_at")]
     public DateTime CreatedAt {get; set;}
     public ICollection<Skill> Skills { get; } = new List<Skill>();
+    public ICollection<User> Users { get; } = new List<User>();
+
 }
 
