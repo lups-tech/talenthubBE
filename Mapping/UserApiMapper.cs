@@ -11,7 +11,7 @@ namespace talenthubBE.Mapping
 {
     public static class UserApiMapper
     {
-        public static UserDTO ToDevDTO (this User User)
+        public static UserDTO ToUserDTO (this User User)
         {
             return new UserDTO
             {
