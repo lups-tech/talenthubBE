@@ -7,7 +7,7 @@ namespace talenthubBE.Models
     [Column("id")]
     public Guid Id {get; set;}
     [Column("auth0Id")]
-    public String auth0Id { get; set; } = "";
+    public String Auth0Id { get; set; } = "";
     [Column("name")]
     public String? Name {get; set;}
     [Column("email")]
