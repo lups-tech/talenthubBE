@@ -1,122 +1,98 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using talenthubBE.Data;
+using talenthubBE.Models.Jobs;
 
 namespace talenthubBE.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class JobsController : ControllerBase
     {
-        private readonly MvcDataContext _context;
+        private readonly IJobsRepository _repository;
 
-        public JobsController(MvcDataContext context)
+        public JobsController(IJobsRepository jobsRepository)
         {
-            _context = context;
+            _repository = jobsRepository;
         }
 
         // GET: api/Jobs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJob()
+        public async Task<ActionResult<IEnumerable<JobDTO>>> GetJobs()
         {
-          if (_context.JobDescriptions == null)
+          IEnumerable<JobDTO>? response = await _repository.GetAllJobs();
+          if(response == null)
           {
-              return NotFound();
+            return NotFound();
           }
-            return await _context.JobDescriptions.ToListAsync();
+            return Ok(response);
         }
 
         // GET: api/Jobs/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Job>> GetJob(Guid id)
+        public async Task<ActionResult<JobDTO>> GetJob(Guid id)
         {
-          if (_context.JobDescriptions == null)
-          {
-              return NotFound();
-          }
-            var job = await _context.JobDescriptions.FindAsync(id);
-
-            if (job == null)
+            JobDTO? response = await _repository.GetJob(id);
+            if (response == null)
             {
                 return NotFound();
             }
-
-            return job;
+            return Ok(response);
         }
 
         // PUT: api/Jobs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutJob(Guid id, Job job)
+        public async Task<ActionResult<JobDTO>> PutJob(Guid id, Job job)
         {
             if (id != job.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(job).State = EntityState.Modified;
-
+            JobDTO? response = await _repository.PutJob(id, job);
+            if(response == null)
+            {
+                return NotFound(new {message = "No such skill found"});
+            }
             try
             {
-                await _context.SaveChangesAsync();
+                return Ok(response);
             }
-            catch (DbUpdateConcurrencyException)
+            catch(Exception)
             {
-                if (!JobExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return Conflict(new {message = "There has been an issue handling your request"});
             }
-
-            return NoContent();
         }
 
         // POST: api/Jobs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Job>> PostJob(Job job)
+        public async Task<ActionResult<JobDTO>> PostJob(CreateJobRequest request)
         {
-          if (_context.JobDescriptions == null)
-          {
-              return Problem("Entity set 'MvcDeveloperContext.Job'  is null.");
-          }
-            _context.JobDescriptions.Add(job);
-            await _context.SaveChangesAsync();
+            JobDTO? response = await _repository.PostJob(request);
+            if(response == null)
+            {
+                return Conflict(new {message = "Job already saved"});
+            }
 
-            return CreatedAtAction("GetJob", new { id = job.Id }, job);
+            return CreatedAtAction("GetJob", new { id = response.Id }, response);
         }
 
         // DELETE: api/Jobs/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJob(Guid id)
         {
-            if (_context.JobDescriptions == null)
+            try
             {
-                return NotFound();
+                await _repository.DeleteJob(id);
             }
-            var job = await _context.JobDescriptions.FindAsync(id);
-            if (job == null)
+            catch (Exception e)
             {
-                return NotFound();
+                return NotFound(new {message = e.Message});
             }
-
-            _context.JobDescriptions.Remove(job);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool JobExists(Guid id)
-        {
-            return (_context.JobDescriptions?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

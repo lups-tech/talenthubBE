@@ -1,122 +1,110 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using talenthubBE.Data;
+using talenthubBE.Models.Skills;
 
 namespace talenthubBE.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SkillsController : ControllerBase
     {
-        private readonly MvcDataContext _context;
+         private readonly ISkillsRepository _repository;
 
-        public SkillsController(MvcDataContext context)
+        public SkillsController(ISkillsRepository skillsRepository)
         {
-            _context = context;
+            _repository = skillsRepository;
         }
 
         // GET: api/Skills
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Skill>>> GetSkills()
+        public async Task<ActionResult<IEnumerable<SkillDTO>>> GetSkills()
         {
-          if (_context.Skills == null)
-          {
-              return NotFound();
-          }
-            return await _context.Skills.ToListAsync();
+            IEnumerable<SkillDTO>? response = await _repository.GetAllSkills();
+            if(response == null)
+            {
+                return NotFound();
+            }
+            return Ok(response);
         }
 
         // GET: api/Skills/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Skill>> GetSkill(Guid id)
+        public async Task<ActionResult<SkillDTO>> GetSkill(Guid id)
         {
-          if (_context.Skills == null)
-          {
-              return NotFound();
-          }
-            var skill = await _context.Skills.FindAsync(id);
-
-            if (skill == null)
+            SkillDTO? response = await _repository.GetSkill(id);
+            if (response == null)
             {
                 return NotFound();
             }
-
-            return skill;
+            return Ok(response);
         }
 
         // PUT: api/Skills/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSkill(Guid id, Skill skill)
+        public async Task<ActionResult<SkillDTO>> PutSkill(Guid id, Skill skill)
         {
             if (id != skill.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(skill).State = EntityState.Modified;
-
+            SkillDTO? response = await _repository.PutSkill(id, skill);
+            if(response == null)
+            {
+                return NotFound(new {message = "No such skill found"});
+            }
             try
             {
-                await _context.SaveChangesAsync();
+                return Ok(response);
             }
-            catch (DbUpdateConcurrencyException)
+            catch(Exception)
             {
-                if (!SkillExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return Conflict(new {message = "There has been an issue handling your request"});
             }
-
-            return NoContent();
         }
 
         // POST: api/Skills
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Skill>> PostSkill(Skill skill)
+        public async Task<ActionResult<SkillDTO>> PostSkill(CreateSkillRequest request)
         {
-          if (_context.Skills == null)
-          {
-              return Problem("Entity set 'MvcDataContext.Skills'  is null.");
-          }
-            _context.Skills.Add(skill);
-            await _context.SaveChangesAsync();
+            SkillDTO? response = await _repository.PostSkill(request);
+            if(response == null)
+            {
+                return NotFound();
+            }
 
-            return CreatedAtAction("GetSkill", new { id = skill.Id }, skill);
+            return CreatedAtAction("GetJob", new { id = response.Id }, response);
         }
 
         // DELETE: api/Skills/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSkill(Guid id)
         {
-            if (_context.Skills == null)
+            try
             {
-                return NotFound();
+                await _repository.DeleteSkill(id);
             }
-            var skill = await _context.Skills.FindAsync(id);
-            if (skill == null)
+            catch (Exception e)
             {
-                return NotFound();
+                return NotFound(new {message = e.Message});
             }
-
-            _context.Skills.Remove(skill);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool SkillExists(Guid id)
+        [HttpPost("/scraper")]
+         public async Task<ActionResult<SkillScraperResponse>> ScrapeSkills([FromBody] SkillScraperRequest text)
         {
-            return (_context.Skills?.Any(e => e.Id == id)).GetValueOrDefault();
+            IEnumerable<SkillDTO> response = await _repository.ScrapeSkills(text);
+            if(response.Count() < 0)
+            {
+                return NoContent();
+            }
+            SkillScraperResponse devMatch = await _repository.SkillMatchDevs(response);
+            
+            return Ok(devMatch);
         }
     }
 }

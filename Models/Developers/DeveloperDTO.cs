@@ -11,5 +11,6 @@ namespace talenthubBE.Models.Developers
     public String? Name {get; set;}
     public String? Email {get; set;}
     public List<DevSkillDTO>? Skills {get; set;}
+    public int SkillMatch {get; set;} = 0;
     }
 }

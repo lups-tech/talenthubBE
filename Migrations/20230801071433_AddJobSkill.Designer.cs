@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace talenthubBE.Migrations
 {
     [DbContext(typeof(MvcDataContext))]
-    partial class MvcDataContextModelSnapshot : ModelSnapshot
+    [Migration("20230801071433_AddJobSkill")]
+    partial class AddJobSkill
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,22 +60,7 @@ namespace talenthubBE.Migrations
 
                     b.HasIndex("SkillsId");
 
-                    b.ToTable("DeveloperSkill");
-                });
-
-            modelBuilder.Entity("DeveloperUser", b =>
-                {
-                    b.Property<Guid>("DevelopersId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("DevelopersId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("DeveloperUser");
+                    b.ToTable("DeveloperSkill", (string)null);
                 });
 
             modelBuilder.Entity("Job", b =>
@@ -85,10 +73,6 @@ namespace talenthubBE.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
-
-                    b.Property<string>("JobTechId")
-                        .HasColumnType("text")
-                        .HasColumnName("jobTech_id");
 
                     b.Property<string>("JobText")
                         .HasColumnType("text")
@@ -115,22 +99,7 @@ namespace talenthubBE.Migrations
 
                     b.HasIndex("SkillsId");
 
-                    b.ToTable("JobSkill");
-                });
-
-            modelBuilder.Entity("JobUser", b =>
-                {
-                    b.Property<Guid>("JobsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("JobsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("JobUser");
+                    b.ToTable("JobSkill", (string)null);
                 });
 
             modelBuilder.Entity("Skill", b =>
@@ -145,7 +114,6 @@ namespace talenthubBE.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("title");
 
@@ -156,39 +124,6 @@ namespace talenthubBE.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Skills");
-                });
-
-            modelBuilder.Entity("talenthubBE.Models.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("text")
-                        .HasColumnName("email");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Role")
-                        .HasColumnType("text")
-                        .HasColumnName("role");
-
-                    b.Property<string>("auth0Id")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("auth0Id");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("DeveloperSkill", b =>
@@ -206,21 +141,6 @@ namespace talenthubBE.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DeveloperUser", b =>
-                {
-                    b.HasOne("Developer", null)
-                        .WithMany()
-                        .HasForeignKey("DevelopersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("talenthubBE.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("JobSkill", b =>
                 {
                     b.HasOne("Job", null)
@@ -232,21 +152,6 @@ namespace talenthubBE.Migrations
                     b.HasOne("Skill", null)
                         .WithMany()
                         .HasForeignKey("SkillsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("JobUser", b =>
-                {
-                    b.HasOne("Job", null)
-                        .WithMany()
-                        .HasForeignKey("JobsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("talenthubBE.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
