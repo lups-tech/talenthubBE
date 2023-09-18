@@ -35,3 +35,5 @@ We are approaching this project with an agile approach, consisting of 1 week spr
 We are currently working on the MVP, with the required Many-To-Many relationships already set up on the backend.
 
 Once this is done, we hope to refactor the controllers to add service injection and keep the business logic separate from the routes.
+
+Test
