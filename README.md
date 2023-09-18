@@ -2,7 +2,7 @@
 
 This repository forms part of a mob-programming project. The overall project is a job seeking system that can anaylse job adverts and display matching developers, to allow for easier and more effective recruitment.
 
-The frontend for this project can be found [here](https://github.com/lups-tech/devFrontend).
+The frontend for this project can be found [here](https://github.com/lups-tech/jobMatches).
 
 ## The Database
 This backend is connected to a project hosted on Supabase. The project is therefore based on a PostgreSQL database.
