@@ -14,5 +14,9 @@ namespace talenthubBE.Data.Repositories.Users
         Task<UserDTO?> PutUser(Guid id, User User);
         Task<UserDTO?> PostUser(CreateUserRequest request);
         Task DeleteUser(Guid id);
+        Task<UserDTO?> AddUserDeveloper(UserDeveloperRequest request);
+        Task<bool> DeleteUserDeveloper(UserDeveloperRequest request);
+        Task<UserDTO?> AddUserJob(UserJobRequest request);
+        Task<bool> DeleteUserJob(UserJobRequest request);
     }
 }

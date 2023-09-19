@@ -48,22 +48,22 @@ builder.Services.AddScoped<ISkillsRepository, SkillsRepository>();
 builder.Services.AddScoped<IDevelopersRepository, DevelopersRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 // CORS
-// var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-// builder.Services.AddCors(options =>
-// {
-//     options.AddPolicy(name: MyAllowSpecificOrigins,
-//                       policy  =>
-//                       {
-//                           policy.WithOrigins(builder.Configuration["Policy_url"]!)
-//                             .AllowAnyHeader()
-//                             .AllowAnyMethod();
-//                       });
-// });
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy  =>
+                      {
+                          policy.WithOrigins(builder.Configuration["Policy_url"]!)
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                      });
+});
 
 var app = builder.Build();
 
 // CORS
-// app.UseCors(MyAllowSpecificOrigins);
+app.UseCors(MyAllowSpecificOrigins);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
