@@ -99,5 +99,43 @@ namespace talenthubBE.Controllers
             }
             return NoContent();
         }
+        [HttpPatch("/api/userdeveloper")]
+        public async Task<ActionResult<UserDTO>> AddUserDeveloper(UserDeveloperRequest request)
+        {
+            UserDTO? response = await _repository.AddUserDeveloper(request);
+            if(response == null)
+            {
+                return NotFound();
+            }
+            return CreatedAtAction("GetUser", new { id = response.Id }, response);
+        }
+        [HttpPatch("/api/userjob")]
+        public async Task<ActionResult<UserDTO>> AddUserJob(UserJobRequest request)
+        {
+            UserDTO? response = await _repository.AddUserJob(request);
+            if(response == null)
+            {
+                return NotFound();
+            }
+            return CreatedAtAction("GetUser", new { id = response.Id }, response);
+        }
+        [HttpDelete("/api/userdeveloper")]
+        public async Task<IActionResult> DeleteUserDeveloper(UserDeveloperRequest request)
+        {
+            if(await _repository.DeleteUserDeveloper(request))
+            {
+                return NoContent();
+            }
+            return NotFound();
+        }
+        [HttpDelete("/api/userjob")]
+        public async Task<IActionResult> DeleteUserJob(UserJobRequest request)
+        {
+            if(await _repository.DeleteUserJob(request))
+            {
+                return NoContent();
+            }
+            return NotFound();
+        }
     }
 }
