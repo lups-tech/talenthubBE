@@ -10,10 +10,10 @@ namespace talenthubBE.Data.Repositories.Users
     public interface IUserRepository
     {
         Task<IEnumerable<UserDTO>?> GetAllUsers();
-        Task<UserDTO?> GetUser(Guid id);
-        Task<UserDTO?> PutUser(Guid id, User User);
-        Task<UserDTO?> PostUser(CreateUserRequest request);
-        Task DeleteUser(Guid id);
+        Task<UserDTO?> GetUser(String id);
+        Task<UserDTO?> PutUser(String id, User User);
+        Task<UserDTO?> PostUser(String userId);
+        Task DeleteUser(String id);
         Task<UserDTO?> AddUserDeveloper(UserDeveloperRequest request);
         Task<bool> DeleteUserDeveloper(UserDeveloperRequest request);
         Task<UserDTO?> AddUserJob(UserJobRequest request);

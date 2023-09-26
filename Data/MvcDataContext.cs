@@ -15,4 +15,9 @@ public class MvcDataContext : DbContext
         public DbSet<Skill> Skills { get; set; } = default!;
 
         public DbSet<User> Users { get; set; } = default!;
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().HasKey(x => x.Auth0Id);
+            base.OnModelCreating(modelBuilder);
+        }
     }
