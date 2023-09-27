@@ -33,7 +33,7 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 return null;
             }
-            var user = await _context.Users.Include("Developers").Include("Jobs").FirstOrDefaultAsync(u => u.Auth0Id == id);
+            var user = await _context.Users.Include("Developers").Include("Jobs").FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {
                 return null;
@@ -42,7 +42,7 @@ namespace talenthubBE.Data.Repositories.Users
             return user.ToUserDTO();
         }
 
-        public async Task<UserDTO?> PostUser(String userId)
+        public async Task<UserDTO?> PostUser(String userId, String orgId)
         {
             if (_context.Users == null)
             {
@@ -50,10 +50,12 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User newUser = new()
             {
-                Auth0Id = userId, 
+                Id = userId,
                 CreatedAt = DateTime.Now.ToUniversalTime(),
+                OrganizationId = orgId,
+                Organization = _context.Organizations.Single(o => o.Id == orgId)
             };
-            if(_context.Users.Any(u => u.Auth0Id == userId))
+            if(_context.Users.Any(u => u.Id == userId))
             {
                 return null;
             }
@@ -112,7 +114,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Developers")
-                .Single(u => u.Auth0Id == request.UserId);
+                .Single(u => u.Id == request.UserId);
             
             Developer developerToAdd = _context.Developers
                 .Single(d => d.Id == request.DeveloperId);
@@ -131,7 +133,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Developers")
-                .Single(u => u.Auth0Id == request.UserId);
+                .Single(u => u.Id == request.UserId);
             
             Developer developerToRemove = _context.Developers
                 .Single(d => d.Id == request.DeveloperId);
@@ -153,7 +155,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Jobs")
-                .Single(u => u.Auth0Id == request.UserId);
+                .Single(u => u.Id == request.UserId);
 
             Job jobToAdd = _context.JobDescriptions
                 .Single(j => j.Id == request.JobId); 
@@ -171,7 +173,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Jobs")
-                .Single(u => u.Auth0Id == request.UserId);
+                .Single(u => u.Id == request.UserId);
 
             Job jobToRemove = _context.JobDescriptions
                 .Single(j => j.Id == request.JobId); 
@@ -182,7 +184,7 @@ namespace talenthubBE.Data.Repositories.Users
         }
         private bool UserExists(String id)
         {
-            return (_context.Users?.Any(e => e.Auth0Id == id)).GetValueOrDefault();
+            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
         }
         private bool DeveloperExists(Guid id)
         {

@@ -48,7 +48,7 @@ namespace talenthubBE.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(String id, User user)
         {
-            if (id != user.Auth0Id)
+            if (id != user.Id)
             {
                 return BadRequest();
             }
@@ -70,10 +70,10 @@ namespace talenthubBE.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser()
+        public async Task<ActionResult<User>> PostUser(String orgId) // Change orgId when we'll have the schema from the FE/Auth0 !!!!!!!!
         {
-            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            UserDTO? response = await _repository.PostUser(authId);
+            String Id = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            UserDTO? response = await _repository.PostUser(Id, orgId);
             if(response == null)
             {
                 return NotFound();

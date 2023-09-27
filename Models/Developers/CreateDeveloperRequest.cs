@@ -11,4 +11,6 @@ public class CreateDeveloperRequest
     public String? Name {get; set;}
     [Required]
     public String? Email {get; set;}
+    [Required]
+    public String? OrganizationId {get; set;}
 }

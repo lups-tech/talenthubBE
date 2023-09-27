@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using talenthubBE.Models;
 using talenthubBE.Models.Developers;
 
 namespace talenthubBE.Mapping
@@ -27,7 +28,7 @@ namespace talenthubBE.Mapping
                 Type = skill.Type,
             };
         }
-        public static Developer ToDev(this CreateDeveloperRequest newDev)
+        public static Developer ToDev(this CreateDeveloperRequest newDev, Organization org)
         {
             return new Developer
             {
@@ -35,6 +36,8 @@ namespace talenthubBE.Mapping
                 Name = newDev.Name,
                 Email = newDev.Email,
                 CreatedAt = DateTime.Now.ToUniversalTime(),
+                OrganizationId = org.Id,
+                Organization = org,
             };
         }
         private static List<DevSkillDTO> SkillsMapper (this ICollection<Skill> skills)
