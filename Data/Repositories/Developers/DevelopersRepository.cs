@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using talenthubBE.Mapping;
+using talenthubBE.Models;
 using talenthubBE.Models.Developers;
 
 namespace talenthubBE.Data
@@ -65,13 +66,16 @@ namespace talenthubBE.Data
 
             return developer.ToDevDTO();
         }
-        public async Task<DeveloperDTO?> PostDeveloper(CreateDeveloperRequest request)
+        public async Task<DeveloperDTO?> PostDeveloper(String authId, CreateDeveloperRequest request)
         {
              if (_context.Developers == null)
           {
               return null;
           }
             Developer newDev = request.ToDev();
+            User devsUser = _context.Users.Single(u => u.Auth0Id == authId);
+            newDev.Users.Add(devsUser);
+            
             _context.Developers.Add(newDev);
             await _context.SaveChangesAsync();
 

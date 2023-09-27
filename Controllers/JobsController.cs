@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using talenthubBE.Data;
@@ -71,7 +72,8 @@ namespace talenthubBE.Controllers
         [HttpPost]
         public async Task<ActionResult<JobDTO>> PostJob(CreateJobRequest request)
         {
-            JobDTO? response = await _repository.PostJob(request);
+            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            JobDTO? response = await _repository.PostJob(authId, request);
             if(response == null)
             {
                 return Conflict(new {message = "Job already saved"});

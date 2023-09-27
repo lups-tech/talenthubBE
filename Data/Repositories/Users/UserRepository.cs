@@ -27,13 +27,13 @@ namespace talenthubBE.Data.Repositories.Users
             return users;
         }
 
-        public async Task<UserDTO?> GetUser(Guid id)
+        public async Task<UserDTO?> GetUser(String id)
         {
             if (_context.Users == null)
             {
                 return null;
             }
-            var user = await _context.Users.Include("Developers").Include("Jobs").FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.Include("Developers").Include("Jobs").FirstOrDefaultAsync(u => u.Auth0Id == id);
             if (user == null)
             {
                 return null;
@@ -42,20 +42,28 @@ namespace talenthubBE.Data.Repositories.Users
             return user.ToUserDTO();
         }
 
-        public async Task<UserDTO?> PostUser(CreateUserRequest request)
+        public async Task<UserDTO?> PostUser(String userId)
         {
             if (_context.Users == null)
             {
                 return null;
             }
-            User newUser = request.ToUser();
+            User newUser = new()
+            {
+                Auth0Id = userId, 
+                CreatedAt = DateTime.Now.ToUniversalTime(),
+            };
+            if(_context.Users.Any(u => u.Auth0Id == userId))
+            {
+                return null;
+            }
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
             return newUser.ToUserDTO();
         }
 
-        public async Task<UserDTO?> PutUser(Guid id, User user)
+        public async Task<UserDTO?> PutUser(String id, User user)
         {
             _context.Entry(user).State = EntityState.Modified;
 
@@ -78,7 +86,7 @@ namespace talenthubBE.Data.Repositories.Users
             return user.ToUserDTO();
         }
 
-        public async Task DeleteUser(Guid id)
+        public async Task DeleteUser(String id)
         {
             if (_context.Users == null)
             {
@@ -104,7 +112,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Developers")
-                .Single(u => u.Id == request.UserId);
+                .Single(u => u.Auth0Id == request.UserId);
             
             Developer developerToAdd = _context.Developers
                 .Single(d => d.Id == request.DeveloperId);
@@ -123,7 +131,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Developers")
-                .Single(u => u.Id == request.UserId);
+                .Single(u => u.Auth0Id == request.UserId);
             
             Developer developerToRemove = _context.Developers
                 .Single(d => d.Id == request.DeveloperId);
@@ -145,7 +153,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Jobs")
-                .Single(u => u.Id == request.UserId);
+                .Single(u => u.Auth0Id == request.UserId);
 
             Job jobToAdd = _context.JobDescriptions
                 .Single(j => j.Id == request.JobId); 
@@ -163,7 +171,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Jobs")
-                .Single(u => u.Id == request.UserId);
+                .Single(u => u.Auth0Id == request.UserId);
 
             Job jobToRemove = _context.JobDescriptions
                 .Single(j => j.Id == request.JobId); 
@@ -172,9 +180,9 @@ namespace talenthubBE.Data.Repositories.Users
             await _context.SaveChangesAsync();
             return true;
         }
-        private bool UserExists(Guid id)
+        private bool UserExists(String id)
         {
-            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Users?.Any(e => e.Auth0Id == id)).GetValueOrDefault();
         }
         private bool DeveloperExists(Guid id)
         {

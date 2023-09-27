@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using talenthubBE.Data.Repositories.Users;
 using talenthubBE.Models;
 using talenthubBE.Models.Users;
@@ -38,7 +33,7 @@ namespace talenthubBE.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        public async Task<ActionResult<User>> GetUser(String id)
         {
            UserDTO? response = await _repository.GetUser(id);
             if (response == null)
@@ -51,9 +46,9 @@ namespace talenthubBE.Controllers
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, User user)
+        public async Task<IActionResult> PutUser(String id, User user)
         {
-            if (id != user.Id)
+            if (id != user.Auth0Id)
             {
                 return BadRequest();
             }
@@ -75,19 +70,20 @@ namespace talenthubBE.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(CreateUserRequest request)
+        public async Task<ActionResult<User>> PostUser()
         {
-            UserDTO? response = await _repository.PostUser(request);
+            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            UserDTO? response = await _repository.PostUser(authId);
             if(response == null)
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetDeveloper", new { id = response.Id }, response);
+            return CreatedAtAction("GetUser", new { id = response.Auth0Id }, response);
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> DeleteUser(String id)
         {
             try
             {
@@ -102,26 +98,29 @@ namespace talenthubBE.Controllers
         [HttpPatch("/api/userdeveloper")]
         public async Task<ActionResult<UserDTO>> AddUserDeveloper(UserDeveloperRequest request)
         {
+            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             UserDTO? response = await _repository.AddUserDeveloper(request);
             if(response == null)
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetUser", new { id = response.Id }, response);
+            return CreatedAtAction("GetUser", new { id = response.Auth0Id }, response);
         }
         [HttpPatch("/api/userjob")]
         public async Task<ActionResult<UserDTO>> AddUserJob(UserJobRequest request)
         {
+            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             UserDTO? response = await _repository.AddUserJob(request);
             if(response == null)
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetUser", new { id = response.Id }, response);
+            return CreatedAtAction("GetUser", new { id = response.Auth0Id }, response);
         }
         [HttpDelete("/api/userdeveloper")]
         public async Task<IActionResult> DeleteUserDeveloper(UserDeveloperRequest request)
         {
+            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             if(await _repository.DeleteUserDeveloper(request))
             {
                 return NoContent();
@@ -131,6 +130,7 @@ namespace talenthubBE.Controllers
         [HttpDelete("/api/userjob")]
         public async Task<IActionResult> DeleteUserJob(UserJobRequest request)
         {
+            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             if(await _repository.DeleteUserJob(request))
             {
                 return NoContent();
