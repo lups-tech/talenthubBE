@@ -48,6 +48,10 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 return null;
             }
+            if(_context.Users.Any(u => u.Id == userId))
+            {
+                return null;
+            }
             User newUser = new()
             {
                 Id = userId,
@@ -55,10 +59,6 @@ namespace talenthubBE.Data.Repositories.Users
                 OrganizationId = orgId,
                 Organization = _context.Organizations.Single(o => o.Id == orgId)
             };
-            if(_context.Users.Any(u => u.Id == userId))
-            {
-                return null;
-            }
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 

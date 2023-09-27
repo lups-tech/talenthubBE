@@ -78,7 +78,7 @@ namespace talenthubBE.Controllers
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetUser", new { id = response.Auth0Id }, response);
+            return CreatedAtAction("GetUser", new { id = response.Id }, response);
         }
 
         // DELETE: api/Users/5
@@ -104,7 +104,7 @@ namespace talenthubBE.Controllers
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetUser", new { id = response.Auth0Id }, response);
+            return CreatedAtAction("GetUser", new { id = response.Id }, response);
         }
         [HttpPatch("/api/userjob")]
         public async Task<ActionResult<UserDTO>> AddUserJob(UserJobRequest request)
@@ -115,7 +115,7 @@ namespace talenthubBE.Controllers
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetUser", new { id = response.Auth0Id }, response);
+            return CreatedAtAction("GetUser", new { id = response.Id }, response);
         }
         [HttpDelete("/api/userdeveloper")]
         public async Task<IActionResult> DeleteUserDeveloper(UserDeveloperRequest request)

@@ -73,7 +73,7 @@ namespace talenthubBE.Data
             }
 
             Job job = request.ToJob();
-            User jobsUser = _context.Users.Single(u => u.Auth0Id == authId);
+            User jobsUser = _context.Users.Single(u => u.Id == authId);
             job.Users.Add(jobsUser);
 
             _context.JobDescriptions.Add(job);
