@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using talenthubBE.Data;
@@ -70,7 +71,8 @@ namespace talenthubBE.Controllers
         [HttpPost]
         public async Task<ActionResult<DeveloperDTO>> PostDeveloper(CreateDeveloperRequest request)
         {
-            DeveloperDTO? response = await _repository.PostDeveloper(request);
+            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            DeveloperDTO? response = await _repository.PostDeveloper(authId, request);
             if(response == null)
             {
                 return NotFound();

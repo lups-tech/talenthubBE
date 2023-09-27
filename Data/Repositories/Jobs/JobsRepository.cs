@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using talenthubBE.Mapping;
+using talenthubBE.Models;
 using talenthubBE.Models.Jobs;
 
 namespace talenthubBE.Data
@@ -64,7 +65,7 @@ namespace talenthubBE.Data
 
             return newJob!.ToJobDTO();
         }
-        public async Task<JobDTO?> PostJob(CreateJobRequest request)
+        public async Task<JobDTO?> PostJob(String authId,CreateJobRequest request)
         {
             if (_context.JobDescriptions.Any(j => j.JobTechId == request.JobTechId))
             {
@@ -72,6 +73,9 @@ namespace talenthubBE.Data
             }
 
             Job job = request.ToJob();
+            User jobsUser = _context.Users.Single(u => u.Auth0Id == authId);
+            job.Users.Add(jobsUser);
+
             _context.JobDescriptions.Add(job);
             var skillsToAdd = new List<Skill>();
             foreach (Guid skillId in request.SelectedSkillIds)
