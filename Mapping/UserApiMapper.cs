@@ -11,13 +11,13 @@ namespace talenthubBE.Mapping
 {
     public static class UserApiMapper
     {
-        public static UserDTO ToUserDTO (this User User)
+        public static UserDTO ToUserDTO (this User user)
         {
             return new UserDTO
             {
-                Id = User.Id,
-                Jobs = User.Jobs.JobsMapper(),
-                Developers = User.Developers.DevelopersMapper(),
+                Id = user.Id,
+                Jobs = user.Jobs.JobsMapper(),
+                Developers = user.Developers.DevelopersMapper(),
             };
         }
         private static List<JobDTO> JobsMapper (this ICollection<Job> jobs)
