@@ -4,6 +4,7 @@ namespace talenthubBE.Data
 {
     public interface IDevelopersRepository
     {
+        // task = async thing. IEnumerable = list of things. DeveloperDTO = Developer Data Transfer Object (like a schema for Developer). ? = nullable. 
         Task<IEnumerable<DeveloperDTO>?> GetAllDevelopers();
         Task<DeveloperDTO?> GetDeveloper(Guid id);
         Task<DeveloperDTO?> PutDeveloper(Guid id, Developer developer);

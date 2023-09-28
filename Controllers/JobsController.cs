@@ -89,12 +89,12 @@ namespace talenthubBE.Controllers
             try
             {
                 await _repository.DeleteJob(id);
+                return NoContent();
             }
             catch (Exception e)
             {
                 return NotFound(new {message = e.Message});
             }
-            return NoContent();
         }
     }
 }

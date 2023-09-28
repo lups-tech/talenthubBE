@@ -99,7 +99,7 @@ namespace talenthubBE.Data
             var job = _context.JobDescriptions.Find(id);
             if (job == null)
             {
-                return;
+               throw new Exception("job not found");
             }
 
             _context.JobDescriptions.Remove(job);

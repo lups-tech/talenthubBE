@@ -97,7 +97,7 @@ namespace talenthubBE.Data.Repositories.Users
             var user = _context.Users.Find(id);
             if (user == null)
             {
-                return;
+                throw new Exception("User not found");
             }
 
             _context.Users.Remove(user);
@@ -131,12 +131,12 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 return false;
             }
-            User selectedUser = _context.Users
+            User selectedUser = await _context.Users
                 .Include("Developers")
-                .Single(u => u.Id == request.UserId);
+                .SingleAsync(u => u.Id == request.UserId);
             
-            Developer developerToRemove = _context.Developers
-                .Single(d => d.Id == request.DeveloperId);
+            Developer developerToRemove = await _context.Developers
+                .SingleAsync(d => d.Id == request.DeveloperId);
             if (developerToRemove == null)
             {
                 return false;
