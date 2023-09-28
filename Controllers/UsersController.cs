@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using talenthubBE.Data.Repositories.Users;
 using talenthubBE.Models;
 using talenthubBE.Models.Users;
@@ -96,9 +97,13 @@ namespace talenthubBE.Controllers
             return NoContent();
         }
         [HttpPatch("/api/userdeveloper")]
-        public async Task<ActionResult<UserDTO>> AddUserDeveloper(UserDeveloperRequest request)
+        public async Task<ActionResult<UserDTO>> AddUserDeveloper(Guid developerId)
         {
-            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            UserDeveloperRequest request = new()
+            {
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!,
+                DeveloperId = developerId,
+            };
             UserDTO? response = await _repository.AddUserDeveloper(request);
             if(response == null)
             {
