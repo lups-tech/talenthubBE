@@ -10,14 +10,9 @@ using talenthubBE.Models.Developers;
 
 namespace talenthubBE.Data
 {
-    // classes = blueprint/dna. Interface = contract = what the blueprint is able to do
     public class DevelopersRepository : IDevelopersRepository
     {
-        // property of the Developer repository class. MvcDataContext is a class that inherits from DbContext, we're calling it _context. If it's private you start with an underscore.
         private readonly MvcDataContext _context;
-
-        // constructor for the DevelopersRepository class. Takes in a MvcDataContext object called context.
-        // when a DeveloperRepository object is created, it needs a MvcDataContext object to be passed in.
         public DevelopersRepository(MvcDataContext context) => _context = context;
         public async Task<IEnumerable<DeveloperDTO>?> GetAllDevelopers()
         {
