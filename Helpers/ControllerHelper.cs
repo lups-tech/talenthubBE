@@ -10,11 +10,11 @@ namespace talenthubBE.Helpers
     {
         public static String OrgIdFinder(ClaimsPrincipal user)
         {
-            return user.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            return user.Claims.Single(c => c.Type == "org_id").Value;
         }
         public static String UserIdFinder(ClaimsPrincipal user)
         {
-            return user.Claims.Single(c => c.Type == "org_id").Value;
+            return user.FindFirstValue(ClaimTypes.NameIdentifier)!;
         }
     }
 }

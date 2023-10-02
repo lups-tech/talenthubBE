@@ -76,9 +76,10 @@ namespace talenthubBE.Data
           {
               return null;
           }
-            Organization org = _context.Organizations.Single(o=> o.Id == orgId);
+            Organization? org = await _context.Organizations.FirstOrDefaultAsync(o=> o.Id == orgId);
+            
             Developer newDev = request.ToDev(org);
-            User devsUser = _context.Users.Single(u => u.Id == userId);
+            User? devsUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             newDev.Users.Add(devsUser);
             
             _context.Developers.Add(newDev);
