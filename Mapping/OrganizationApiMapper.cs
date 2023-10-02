@@ -1,23 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using talenthubBE.Models;
+using talenthubBE.Models.Organizations;
 using talenthubBE.Models.Developers;
 using talenthubBE.Models.Jobs;
 using talenthubBE.Models.Users;
 
 namespace talenthubBE.Mapping
 {
-    public static class UserApiMapper
+    public static class OrganizationApiMapper
     {
-        public static UserDTO ToUserDTO (this User user)
+        public static OrganizationDTO ToOrganizationDTO (this Organization org)
         {
-            return new UserDTO
+            return new OrganizationDTO
             {
-                Id = user.Id,
-                Jobs = user.Jobs.JobsMapper(),
-                Developers = user.Developers.DevelopersMapper(),
+                Id = org.Id,
+                Jobs = org.Jobs.JobsMapper(),
+                Developers = org.Developers.DevelopersMapper(),
+                Users = org.Users.UsersMapper(),
             };
         }
         private static List<JobDTO> JobsMapper (this ICollection<Job> jobs)
@@ -36,6 +34,16 @@ namespace talenthubBE.Mapping
             foreach (Developer developer in developers)
             {
                 output.Add(developer.ToDevDTO());
+            }
+
+            return output;
+        }
+        private static List<UserDTO> UsersMapper (this ICollection<User> users)
+        {
+            List<UserDTO> output = new();
+            foreach (User user in users)
+            {
+                output.Add(user.ToUserDTO());
             }
 
             return output;

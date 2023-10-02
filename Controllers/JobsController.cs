@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using talenthubBE.Data;
+using talenthubBE.Helpers;
 using talenthubBE.Models.Jobs;
 
 namespace talenthubBE.Controllers
@@ -72,8 +73,10 @@ namespace talenthubBE.Controllers
         [HttpPost]
         public async Task<ActionResult<JobDTO>> PostJob(CreateJobRequest request)
         {
-            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            JobDTO? response = await _repository.PostJob(authId, request);
+            String userId = ControllerHelper.UserIdFinder(User);
+            String orgId = ControllerHelper.OrgIdFinder(User);
+            
+            JobDTO? response = await _repository.PostJob(userId, orgId, request);
             if(response == null)
             {
                 return Conflict(new {message = "Job already saved"});
@@ -89,12 +92,12 @@ namespace talenthubBE.Controllers
             try
             {
                 await _repository.DeleteJob(id);
+                return NoContent();
             }
             catch (Exception e)
             {
                 return NotFound(new {message = e.Message});
             }
-            return NoContent();
         }
     }
 }

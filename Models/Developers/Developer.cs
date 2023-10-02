@@ -13,6 +13,8 @@ public class Developer
     public DateTime CreatedAt {get; set;}
     public ICollection<Skill> Skills { get; } = new List<Skill>();
     public ICollection<User> Users { get; } = new List<User>();
+    public required String OrganizationId { get; set; }
+    public required Organization Organization { get; set; } = null!;
 
 }
 

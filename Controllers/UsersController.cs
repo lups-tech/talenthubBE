@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using talenthubBE.Data.Repositories.Users;
+using talenthubBE.Helpers;
 using talenthubBE.Models;
 using talenthubBE.Models.Users;
 
@@ -49,7 +50,7 @@ namespace talenthubBE.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(String id, User user)
         {
-            if (id != user.Auth0Id)
+            if (id != user.Id)
             {
                 return BadRequest();
             }
@@ -71,15 +72,17 @@ namespace talenthubBE.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser()
+        public async Task<ActionResult<User>> PostUser() 
         {
-            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            UserDTO? response = await _repository.PostUser(authId);
+            string userId = ControllerHelper.UserIdFinder(User);
+            string orgId = ControllerHelper.OrgIdFinder(User);
+
+            UserDTO? response = await _repository.PostUser(userId, orgId);
             if(response == null)
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetUser", new { id = response.Auth0Id }, response);
+            return CreatedAtAction("GetUser", new { id = response.Id }, response);
         }
 
         // DELETE: api/Users/5
@@ -109,7 +112,7 @@ namespace talenthubBE.Controllers
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetUser", new { id = response.Auth0Id }, response);
+            return CreatedAtAction("GetUser", new { id = response.Id }, response);
         }
         [HttpPatch("/api/userjob")]
         public async Task<ActionResult<UserDTO>> AddUserJob(UserJobRequest request)
@@ -120,7 +123,7 @@ namespace talenthubBE.Controllers
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetUser", new { id = response.Auth0Id }, response);
+            return CreatedAtAction("GetUser", new { id = response.Id }, response);
         }
         [HttpDelete("/api/userdeveloper")]
         public async Task<IActionResult> DeleteUserDeveloper(UserDeveloperRequest request)

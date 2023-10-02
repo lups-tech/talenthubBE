@@ -33,7 +33,7 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 return null;
             }
-            var user = await _context.Users.Include("Developers").Include("Jobs").FirstOrDefaultAsync(u => u.Auth0Id == id);
+            var user = await _context.Users.Include("Developers").Include("Jobs").FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {
                 return null;
@@ -42,21 +42,23 @@ namespace talenthubBE.Data.Repositories.Users
             return user.ToUserDTO();
         }
 
-        public async Task<UserDTO?> PostUser(String userId)
+        public async Task<UserDTO?> PostUser(String userId, String orgId)
         {
             if (_context.Users == null)
             {
                 return null;
             }
-            User newUser = new()
-            {
-                Auth0Id = userId, 
-                CreatedAt = DateTime.Now.ToUniversalTime(),
-            };
-            if(_context.Users.Any(u => u.Auth0Id == userId))
+            if(_context.Users.Any(u => u.Id == userId))
             {
                 return null;
             }
+            User newUser = new()
+            {
+                Id = userId,
+                CreatedAt = DateTime.Now.ToUniversalTime(),
+                OrganizationId = orgId,
+                Organization = _context.Organizations.Single(o => o.Id == orgId)
+            };
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
@@ -95,7 +97,7 @@ namespace talenthubBE.Data.Repositories.Users
             var user = _context.Users.Find(id);
             if (user == null)
             {
-                return;
+                throw new Exception("User not found");
             }
 
             _context.Users.Remove(user);
@@ -112,7 +114,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Developers")
-                .Single(u => u.Auth0Id == request.UserId);
+                .Single(u => u.Id == request.UserId);
             
             Developer developerToAdd = _context.Developers
                 .Single(d => d.Id == request.DeveloperId);
@@ -129,12 +131,12 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 return false;
             }
-            User selectedUser = _context.Users
+            User selectedUser = await _context.Users
                 .Include("Developers")
-                .Single(u => u.Auth0Id == request.UserId);
+                .SingleAsync(u => u.Id == request.UserId);
             
-            Developer developerToRemove = _context.Developers
-                .Single(d => d.Id == request.DeveloperId);
+            Developer developerToRemove = await _context.Developers
+                .SingleAsync(d => d.Id == request.DeveloperId);
             if (developerToRemove == null)
             {
                 return false;
@@ -153,7 +155,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Jobs")
-                .Single(u => u.Auth0Id == request.UserId);
+                .Single(u => u.Id == request.UserId);
 
             Job jobToAdd = _context.JobDescriptions
                 .Single(j => j.Id == request.JobId); 
@@ -171,7 +173,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             User selectedUser = _context.Users
                 .Include("Jobs")
-                .Single(u => u.Auth0Id == request.UserId);
+                .Single(u => u.Id == request.UserId);
 
             Job jobToRemove = _context.JobDescriptions
                 .Single(j => j.Id == request.JobId); 
@@ -182,7 +184,7 @@ namespace talenthubBE.Data.Repositories.Users
         }
         private bool UserExists(String id)
         {
-            return (_context.Users?.Any(e => e.Auth0Id == id)).GetValueOrDefault();
+            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
         }
         private bool DeveloperExists(Guid id)
         {
