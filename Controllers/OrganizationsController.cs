@@ -71,7 +71,7 @@ namespace talenthubBE.Controllers
         // POST: api/Organizations
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Organization>> PostOrganization(String orgId) // Change orgId when we'll have the schema from the FE/Auth0 !!!!!!!!
+        public async Task<ActionResult<Organization>> PostOrganization(String orgId)
         {
             OrganizationDTO? response = await _repository.PostOrganization(orgId);
             if(response == null)
@@ -97,7 +97,6 @@ namespace talenthubBE.Controllers
         }
 
         [HttpPatch("api/organizationsuser")]
-        // the body of http response will be an organizationDTO (models/organizations/organizationDTO.cs)
         public async Task<ActionResult<OrganizationDTO>> AddUserToOrganization(String orgId, String userId)
         {
             try
