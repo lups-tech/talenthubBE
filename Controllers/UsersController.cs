@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using talenthubBE.Data.Repositories.Users;
+using talenthubBE.Helpers;
 using talenthubBE.Models;
 using talenthubBE.Models.Users;
 
@@ -70,10 +71,12 @@ namespace talenthubBE.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(String orgId) // Change orgId when we'll have the schema from the FE/Auth0 !!!!!!!!
+        public async Task<ActionResult<User>> PostUser() 
         {
-            String Id = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            UserDTO? response = await _repository.PostUser(Id, orgId);
+            string userId = ControllerHelper.UserIdFinder(User);
+            string orgId = ControllerHelper.OrgIdFinder(User);
+
+            UserDTO? response = await _repository.PostUser(userId, orgId);
             if(response == null)
             {
                 return NotFound();
