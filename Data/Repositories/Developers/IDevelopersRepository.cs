@@ -8,7 +8,7 @@ namespace talenthubBE.Data
         Task<IEnumerable<DeveloperDTO>?> GetAllDevelopers();
         Task<DeveloperDTO?> GetDeveloper(Guid id);
         Task<DeveloperDTO?> PutDeveloper(Guid id, Developer developer);
-        Task<DeveloperDTO?> PostDeveloper(String authId, CreateDeveloperRequest request);
+        Task<DeveloperDTO?> PostDeveloper(String userId, String orgId, CreateDeveloperRequest request);
         Task DeleteDeveloper(Guid id);
         Task<DeveloperDTO> AddDeveloperSkills(CreateDeveloperSkillsRequest request);
         Task<bool> DeleteDeveloperSkill(DeleteDeveloperSkillsRequest request);

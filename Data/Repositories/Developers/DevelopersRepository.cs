@@ -70,13 +70,13 @@ namespace talenthubBE.Data
                 }
             }
         }
-        public async Task<DeveloperDTO?> PostDeveloper(String userId, CreateDeveloperRequest request)
+        public async Task<DeveloperDTO?> PostDeveloper(String userId, String orgId, CreateDeveloperRequest request)
         {
              if (_context.Developers == null)
           {
               return null;
           }
-            Organization org = _context.Organizations.Single(o=> o.Id == request.OrganizationId);
+            Organization org = _context.Organizations.Single(o=> o.Id == orgId);
             Developer newDev = request.ToDev(org);
             User devsUser = _context.Users.Single(u => u.Id == userId);
             newDev.Users.Add(devsUser);
