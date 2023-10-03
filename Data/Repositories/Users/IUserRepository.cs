@@ -12,6 +12,7 @@ namespace talenthubBE.Data.Repositories.Users
         Task<IEnumerable<UserDTO>?> GetAllUsers();
         Task<UserDTO?> GetUser(String id);
         Task<UserDTO?> PutUser(String id, User User);
+        Task<bool> RegisterUserWithAuth0(String orgId, String email, String role); 
         Task<UserDTO?> PostUser(String userId, String orgId);
         Task DeleteUser(String id);
         Task<UserDTO?> AddUserDeveloper(UserDeveloperRequest request);

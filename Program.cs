@@ -32,16 +32,16 @@ builder.Services.AddSwaggerGen(c =>
         {
             Implicit = new OpenApiOAuthFlow
             {
-                AuthorizationUrl = new Uri(builder.Configuration["Auth0:Domain"] + "authorize?audience=" + builder.Configuration["Auth0:Audience"]),
                 Scopes = new Dictionary<string, string>
                 {
-                    {"create:admin", "create:admin"},
-                    {"create:users", "create:users"},
+                    {"create:admin", "Create an Admin"},
+                    {"create:users", "Create a User"},
                     {"edit:developers", "Edit Developers"},
                     {"edit:jobs", "Edit Jobs"},
                     {"edit:skills", "Edit Skills"},
                     {"update:user", "Update User"},
                 },
+                AuthorizationUrl = new Uri(builder.Configuration["Auth0:Domain"] + "authorize?audience=" + builder.Configuration["Auth0:Audience"]),
             }
         }
     });

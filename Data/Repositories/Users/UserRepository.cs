@@ -2,14 +2,22 @@ using Microsoft.EntityFrameworkCore;
 using talenthubBE.Mapping;
 using talenthubBE.Models;
 using talenthubBE.Models.Users;
+using Microsoft.Extensions.Configuration;
+using System.Configuration;
+using RestSharp;
+using System.Net.Http.Headers;
 
 namespace talenthubBE.Data.Repositories.Users
 {
     public class UserRepository : IUserRepository
     {
         private readonly MvcDataContext _context;
-        public UserRepository(MvcDataContext context) => _context = context;
-
+        private readonly IConfiguration _configuration;
+        public UserRepository(MvcDataContext context, IConfiguration configuration)
+        {
+            _context = context;
+            _configuration = configuration;
+        }
         public async Task<IEnumerable<UserDTO>?> GetAllUsers()
         {
             if (_context.Users == null)
@@ -23,7 +31,8 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 users.Add(user.ToUserDTO());
             }
-
+        
+            Console.WriteLine(await GetManagementToken());
             return users;
         }
 
@@ -65,6 +74,23 @@ namespace talenthubBE.Data.Repositories.Users
             return newUser.ToUserDTO();
         }
 
+        public async Task<bool> RegisterUserWithAuth0(String orgId, String email, String role)
+        {
+            if(!Enum.IsDefined(typeof(Roles), role))
+            {
+                return false;
+            }
+            HttpClient client = new()
+            {
+                BaseAddress = new Uri($"{_configuration["Auth0:Domain"]}/api/v2/organizations/{orgId}/invitations")
+            };
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("Content-Type", "application/json");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer");
+            client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+            throw new NotImplementedException();
+        }
+        
         public async Task<UserDTO?> PutUser(String id, User user)
         {
             _context.Entry(user).State = EntityState.Modified;
@@ -193,6 +219,17 @@ namespace talenthubBE.Data.Repositories.Users
         private bool JobExists(Guid id)
         {
             return (_context.JobDescriptions?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+        private async Task<String> GetManagementToken()
+        {
+            HttpClient client = new();
+            client.DefaultRequestHeaders.Clear();
+            StringContent query = new(
+                $"grant_type=client_credentials&client_id={_configuration["Auth0:ManagementClientId"]}&client_secret=%7B{_configuration["Auth0:ClientSecret"]}%7D&audience=https%3A%2F%2F{_configuration["Auth0:ManagementAPI"]}%2Fapi%2Fv2%2F", 
+                new MediaTypeHeaderValue("application/x-www-form-urlencoded"));
+            var response = await client.PostAsync(new Uri($"{_configuration["Auth0:Domain"]}/oauth/token"), query);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

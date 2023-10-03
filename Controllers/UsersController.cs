@@ -84,6 +84,15 @@ namespace talenthubBE.Controllers
             return CreatedAtAction("GetUser", new { id = response.Id }, response);
         }
 
+        [HttpPost("/api/users/register")]
+        [Authorize("create:users")]
+        public async Task<ActionResult> PostUserEmail(String email, String role) 
+        {
+            string orgId = ControllerHelper.OrgIdFinder(User);
+            bool response = await _repository.RegisterUserWithAuth0(orgId, email, role);
+            return Ok("hello");
+        }
+
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(String id)
