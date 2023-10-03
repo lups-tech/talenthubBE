@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using talenthubBE.Data;
 using talenthubBE.Data.Repositories;
 using talenthubBE.Data.Repositories.Organizations;
 using talenthubBE.Data.Repositories.Users;
+using talenthubBE.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MvcDataContext>(options =>
@@ -30,7 +32,16 @@ builder.Services.AddSwaggerGen(c =>
         {
             Implicit = new OpenApiOAuthFlow
             {
-                AuthorizationUrl = new Uri(builder.Configuration["Auth0:Domain"] + "authorize?audience=" + builder.Configuration["Auth0:Audience"])
+                AuthorizationUrl = new Uri(builder.Configuration["Auth0:Domain"] + "authorize?audience=" + builder.Configuration["Auth0:Audience"]),
+                Scopes = new Dictionary<string, string>
+                {
+                    {"create:admin", "create:admin"},
+                    {"create:users", "create:users"},
+                    {"edit:developers", "Edit Developers"},
+                    {"edit:jobs", "Edit Jobs"},
+                    {"edit:skills", "Edit Skills"},
+                    {"update:user", "Update User"},
+                },
             }
         }
     });
@@ -44,6 +55,46 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.Audience = builder.Configuration["Auth0:Audience"];
     }
 );
+builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+builder.Services.AddAuthorization(options => 
+{
+    options.AddPolicy(
+        "create:admin", 
+        policy => policy.Requirements.Add(
+            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]
+        )
+    ));
+    options.AddPolicy(
+        "create:users", 
+        policy => policy.Requirements.Add(
+            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]
+        )
+    ));
+    options.AddPolicy(
+        "edit:developers", 
+        policy => policy.Requirements.Add(
+            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]
+        )
+    ));
+    options.AddPolicy(
+        "edit:jobs", 
+        policy => policy.Requirements.Add(
+            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]
+        )
+    ));
+    options.AddPolicy(
+        "edit:skills", 
+        policy => policy.Requirements.Add(
+            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]
+        )
+    ));
+    options.AddPolicy(
+        "update:user", 
+        policy => policy.Requirements.Add(
+            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]
+        )
+    ));
+});
 
 builder.Services.AddScoped<IJobsRepository, JobsRepository>();
 builder.Services.AddScoped<ISkillsRepository, SkillsRepository>();
@@ -52,22 +103,22 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrganizationRepository, OrganizationsRepository>();
 
 // CORS
-// var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-// builder.Services.AddCors(options =>
-// {
-//     options.AddPolicy(name: MyAllowSpecificOrigins,
-//                       policy  =>
-//                       {
-//                           policy.WithOrigins(builder.Configuration["Policy_url"]!)
-//                             .AllowAnyHeader()
-//                             .AllowAnyMethod();
-//                       });
-// });
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy  =>
+                      {
+                          policy.WithOrigins(builder.Configuration["Policy_url"]!)
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                      });
+});
 
 var app = builder.Build();
 
 // CORS
-// app.UseCors(MyAllowSpecificOrigins);
+app.UseCors(MyAllowSpecificOrigins);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

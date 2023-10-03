@@ -114,5 +114,11 @@ namespace talenthubBE.Controllers
             }
             return NotFound();
         }
+        [HttpGet("/api/testscope")]
+        [Authorize("create:admin")]
+        public IActionResult Test()
+        {
+            return Ok("It Worked!");
+        }
     }
 }
