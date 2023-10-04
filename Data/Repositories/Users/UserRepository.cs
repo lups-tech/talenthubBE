@@ -4,7 +4,6 @@ using talenthubBE.Models;
 using talenthubBE.Models.Users;
 using Microsoft.Extensions.Configuration;
 using System.Configuration;
-using RestSharp;
 using System.Net.Http.Headers;
 
 namespace talenthubBE.Data.Repositories.Users
@@ -31,7 +30,6 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 users.Add(user.ToUserDTO());
             }
-        
             Console.WriteLine(await GetManagementToken());
             return users;
         }
@@ -82,11 +80,10 @@ namespace talenthubBE.Data.Repositories.Users
             }
             HttpClient client = new()
             {
-                BaseAddress = new Uri($"{_configuration["Auth0:Domain"]}/api/v2/organizations/{orgId}/invitations")
+                BaseAddress = new Uri($"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/invitations")
             };
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Content-Type", "application/json");
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {GetManagementToken()}");
             client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
             throw new NotImplementedException();
         }
@@ -223,12 +220,16 @@ namespace talenthubBE.Data.Repositories.Users
         private async Task<String> GetManagementToken()
         {
             HttpClient client = new();
-            client.DefaultRequestHeaders.Clear();
-            StringContent query = new(
-                $"grant_type=client_credentials&client_id={_configuration["Auth0:ManagementClientId"]}&client_secret=%7B{_configuration["Auth0:ClientSecret"]}%7D&audience=https%3A%2F%2F{_configuration["Auth0:ManagementAPI"]}%2Fapi%2Fv2%2F", 
-                new MediaTypeHeaderValue("application/x-www-form-urlencoded"));
-            var response = await client.PostAsync(new Uri($"{_configuration["Auth0:Domain"]}/oauth/token"), query);
-            response.EnsureSuccessStatusCode();
+            Uri uri = new($"{_configuration["Auth0:Domain"]}oauth/token");
+            var content = new FormUrlEncodedContent(new[] 
+            {
+                new KeyValuePair<String, String>("grant_type", "client_credentials"),
+                new KeyValuePair<String, String>("client_id", _configuration["Auth0:ManagementClientId"]),
+                new KeyValuePair<String, String>("client_secret", _configuration["Auth0:ClientSecret"]),
+                new KeyValuePair<String, String>("audience", $"{_configuration["Auth0:Domain"]}api/v2/"),
+            });
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+            var response = await client.PostAsync(uri, content);
             return await response.Content.ReadAsStringAsync();
         }
     }
