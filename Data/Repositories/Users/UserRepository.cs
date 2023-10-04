@@ -5,6 +5,10 @@ using talenthubBE.Models.Users;
 using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace talenthubBE.Data.Repositories.Users
 {
@@ -71,20 +75,48 @@ namespace talenthubBE.Data.Repositories.Users
             return newUser.ToUserDTO();
         }
 
-        public async Task<bool> RegisterUserWithAuth0(String orgId, String email, String role)
+        public async Task<bool> RegisterUserWithAuth0(String orgId, String email, String role, String name)
         {
             if(!Enum.IsDefined(typeof(Roles), role))
             {
                 return false;
             }
-            HttpClient client = new()
+
+            String roleId = "";
+            if (role == "Admin")
             {
-                BaseAddress = new Uri($"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/invitations")
-            };
+                roleId = "rol_xasNtUO2PeKyAGvZ";
+            } 
+            if (role == "Sales")
+            {
+                roleId = "rol_SwiRJAqI5EUeA5vh";
+            }
+
+            HttpClient client = new(); 
+
+            Uri uri = new($"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/invitations");
+
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
             client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-            throw new NotImplementedException();
+
+            string jsonBody = string.Format("{{ \"inviter\": {{  \"name\": \"{0}\"}}, \"invitee\": {{ \"email\": \"{1}\"}}, \"client_id\": \"{2}\", \"connection_id\": \"{3}\", \"ttl_sec\": 0, \"roles\": [ \"{4}\" ], \"send_invitation_email\": \"{5}\" }}", name, email, _configuration["Auth0:ManagementClientID"], _configuration["connectionId"], roleId, true);
+
+            Console.WriteLine(jsonBody);
+
+            InvitationEmail jsonBodyDeserialized = JsonConvert.DeserializeObject<InvitationEmail>(jsonBody)!;
+
+            Console.WriteLine(jsonBodyDeserialized.GetType());
+
+            JsonContent content = JsonContent.Create<InvitationEmail>(jsonBodyDeserialized);
+
+            Console.WriteLine(await content.ReadAsStringAsync());
+            
+            var response = await client.PostAsync(uri, content);
+
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+            return true;
         }
         
         public async Task<UserDTO?> PutUser(String id, User user)
