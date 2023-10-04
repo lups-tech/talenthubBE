@@ -30,7 +30,6 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 users.Add(user.ToUserDTO());
             }
-            Console.WriteLine(await GetManagementToken());
             return users;
         }
 
@@ -83,7 +82,7 @@ namespace talenthubBE.Data.Repositories.Users
                 BaseAddress = new Uri($"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/invitations")
             };
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {GetManagementToken()}");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
             client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
             throw new NotImplementedException();
         }
@@ -230,7 +229,9 @@ namespace talenthubBE.Data.Repositories.Users
             });
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             var response = await client.PostAsync(uri, content);
-            return await response.Content.ReadAsStringAsync();
+            response.EnsureSuccessStatusCode();
+            ManagementAPIResponse jsonString = await response.Content.ReadFromJsonAsync<ManagementAPIResponse>();
+            return jsonString.AccessToken;
         }
     }
 }
