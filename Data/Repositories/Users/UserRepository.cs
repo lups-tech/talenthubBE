@@ -9,6 +9,8 @@ using System.Text;
 using System.Text.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using NuGet.Packaging;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace talenthubBE.Data.Repositories.Users
 {
@@ -100,17 +102,23 @@ namespace talenthubBE.Data.Repositories.Users
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
             client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
 
-            string jsonBody = string.Format("{{ \"inviter\": {{  \"name\": \"{0}\"}}, \"invitee\": {{ \"email\": \"{1}\"}}, \"client_id\": \"{2}\", \"connection_id\": \"{3}\", \"ttl_sec\": 0, \"roles\": [ \"{4}\" ], \"send_invitation_email\": \"{5}\" }}", name, email, _configuration["Auth0:ManagementClientID"], _configuration["connectionId"], roleId, true);
+            InviterClass inviter = new()
+            { Name = name };
+            InviteeClass invitee = new()
+            { Email = email };
+            String[] roles = {roleId};
+            InvitationEmail invitationEmail = new()
+            {
+                Inviter = inviter,
+                Invitee = invitee,
+                ClientId = _configuration["Auth0:ClientId"]!,
+                ConnectionId = _configuration["connectionId"]!,
+                TtlSec = 0,
+                Roles =  roles,
+                SendInvitationEmail = true,
+            };
 
-            Console.WriteLine(jsonBody);
-
-            InvitationEmail jsonBodyDeserialized = JsonConvert.DeserializeObject<InvitationEmail>(jsonBody)!;
-
-            Console.WriteLine(jsonBodyDeserialized.GetType());
-
-            JsonContent content = JsonContent.Create<InvitationEmail>(jsonBodyDeserialized);
-
-            Console.WriteLine(await content.ReadAsStringAsync());
+            JsonContent content = JsonContent.Create<InvitationEmail>(invitationEmail);
             
             var response = await client.PostAsync(uri, content);
 
