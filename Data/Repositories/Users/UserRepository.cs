@@ -254,22 +254,22 @@ namespace talenthubBE.Data.Repositories.Users
         {
             return (_context.JobDescriptions?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-        private async Task<String> GetManagementToken()
+        private async Task<String?> GetManagementToken()
         {
             HttpClient client = new();
             Uri uri = new($"{_configuration["Auth0:Domain"]}oauth/token");
             var content = new FormUrlEncodedContent(new[] 
             {
                 new KeyValuePair<String, String>("grant_type", "client_credentials"),
-                new KeyValuePair<String, String>("client_id", _configuration["Auth0:ManagementClientId"]),
-                new KeyValuePair<String, String>("client_secret", _configuration["Auth0:ClientSecret"]),
+                new KeyValuePair<String, String>("client_id", _configuration["Auth0:ManagementClientId"]!),
+                new KeyValuePair<String, String>("client_secret", _configuration["Auth0:ClientSecret"]!),
                 new KeyValuePair<String, String>("audience", $"{_configuration["Auth0:Domain"]}api/v2/"),
             });
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             var response = await client.PostAsync(uri, content);
             response.EnsureSuccessStatusCode();
-            ManagementAPIResponse jsonString = await response.Content.ReadFromJsonAsync<ManagementAPIResponse>();
-            return jsonString.AccessToken;
+            ManagementAPIResponse? jsonString = await response.Content.ReadFromJsonAsync<ManagementAPIResponse>();
+            return jsonString?.AccessToken;
         }
     }
 }
