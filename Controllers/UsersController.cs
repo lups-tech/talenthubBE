@@ -93,7 +93,6 @@ namespace talenthubBE.Controllers
             {
                 return BadRequest();
             }
-
             return Ok();   
         }
 

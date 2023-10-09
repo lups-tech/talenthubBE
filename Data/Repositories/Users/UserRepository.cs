@@ -2,15 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using talenthubBE.Mapping;
 using talenthubBE.Models;
 using talenthubBE.Models.Users;
-using Microsoft.Extensions.Configuration;
-using System.Configuration;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using NuGet.Packaging;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace talenthubBE.Data.Repositories.Users
 {
@@ -85,13 +77,19 @@ namespace talenthubBE.Data.Repositories.Users
             }
 
             String roleId = "";
-            if (role == "Admin")
+            switch (role)
             {
-                roleId = "rol_xasNtUO2PeKyAGvZ";
-            } 
-            if (role == "Sales")
-            {
-                roleId = "rol_SwiRJAqI5EUeA5vh";
+                case "Admin":
+                {
+                    roleId = "rol_xasNtUO2PeKyAGvZ";
+                    break;
+                }
+                case "Sales":
+                {
+                    roleId = "rol_SwiRJAqI5EUeA5vh";
+                    break;
+                }
+                default: throw new ArgumentException("Role not recognised");
             }
 
             HttpClient client = new(); 
@@ -102,27 +100,27 @@ namespace talenthubBE.Data.Repositories.Users
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
             client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
 
-            InviterClass inviter = new()
-            { Name = name };
-            InviteeClass invitee = new()
-            { Email = email };
-            String[] roles = {roleId};
             InvitationEmail invitationEmail = new()
             {
-                Inviter = inviter,
-                Invitee = invitee,
+                Inviter = new InviterClass()
+                {
+                    Name = name
+                },
+                Invitee = new InviteeClass()
+                {
+                    Email = email
+                },
                 ClientId = _configuration["Auth0:ClientId"]!,
                 ConnectionId = _configuration["connectionId"]!,
                 TtlSec = 0,
-                Roles =  roles,
+                Roles =  new string[1] {roleId},
                 SendInvitationEmail = true,
             };
 
             JsonContent content = JsonContent.Create<InvitationEmail>(invitationEmail);
             
             var response = await client.PostAsync(uri, content);
-
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
+            response.EnsureSuccessStatusCode();
 
             return true;
         }
