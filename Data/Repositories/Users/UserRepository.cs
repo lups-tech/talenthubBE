@@ -50,7 +50,7 @@ namespace talenthubBE.Data.Repositories.Users
         {
             if (_context.Users == null)
             {
-                return null;
+                throw new Exception("Database Issue");
             }
             if(_context.Users.Any(u => u.Id == userId))
             {

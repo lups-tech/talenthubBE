@@ -77,11 +77,18 @@ namespace talenthubBE.Controllers
             string orgId = ControllerHelper.OrgIdFinder(User);
 
             UserDTO? response = await _repository.PostUser(userId, orgId);
-            if(response == null)
+            try
+            {
+                if(response == null)
+                {
+                    return Ok();
+                }
+                return CreatedAtAction("GetUser", new { id = response.Id }, response);
+            }
+            catch
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetUser", new { id = response.Id }, response);
         }
 
         [HttpPost("/api/users/register")]
