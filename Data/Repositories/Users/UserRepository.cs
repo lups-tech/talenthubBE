@@ -3,6 +3,7 @@ using talenthubBE.Mapping;
 using talenthubBE.Models;
 using talenthubBE.Models.Users;
 using System.Net.Http.Headers;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace talenthubBE.Data.Repositories.Users
 {
@@ -41,7 +42,10 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 return null;
             }
-            var user = await _context.Users.Include("Developers").Include("Jobs").FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users
+                .Include("Developers")
+                .Include("Jobs")
+                .FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {
                 return null;
@@ -79,27 +83,10 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 return false;
             }
-
-            String roleId = "";
-            switch (role)
-            {
-                case "Admin":
-                {
-                    roleId = "rol_xasNtUO2PeKyAGvZ";
-                    break;
-                }
-                case "Sales":
-                {
-                    roleId = "rol_SwiRJAqI5EUeA5vh";
-                    break;
-                }
-                default: throw new ArgumentException("Role not recognised");
-            }
+            String roleId = GetRoleId(role);
 
             HttpClient client = new(); 
-
             Uri uri = new($"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/invitations");
-
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
             client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
@@ -129,6 +116,28 @@ namespace talenthubBE.Data.Repositories.Users
             return true;
         }
         
+        public async Task UpgradeUser(String userId, String role)
+        {
+            if(!Enum.IsDefined(typeof(Roles), role))
+            {
+                throw new ArgumentException("Role does not exist");
+            }
+            String roleId = GetRoleId(role);
+
+            HttpClient client = new(); 
+            Uri uri = new($"{_configuration["Auth0:Domain"]}api/v2/users/{userId}/roles");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
+            client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+
+            RolesRequest request = new()
+            {
+                Roles = new string[1] {roleId}
+            };
+            JsonContent content = JsonContent.Create<RolesRequest>(request);
+            var response = await client.PostAsync(uri, content);
+            response.EnsureSuccessStatusCode();
+        }
         public async Task<UserDTO?> PutUser(String id, User user)
         {
             _context.Entry(user).State = EntityState.Modified;
@@ -274,6 +283,15 @@ namespace talenthubBE.Data.Repositories.Users
             response.EnsureSuccessStatusCode();
             ManagementAPIResponse? jsonString = await response.Content.ReadFromJsonAsync<ManagementAPIResponse>();
             return jsonString?.AccessToken;
+        }
+        private static string GetRoleId(string role) 
+        {
+            return role switch
+            {
+                "Admin" => "rol_xasNtUO2PeKyAGvZ",
+                "Sales" => "rol_SwiRJAqI5EUeA5vh",
+                _ => throw new ArgumentException("Role not recognised")
+            };
         }
     }
 }

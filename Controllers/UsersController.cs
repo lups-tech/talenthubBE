@@ -104,6 +104,21 @@ namespace talenthubBE.Controllers
             return Ok();   
         }
 
+        [HttpPatch("/api/users/upgrade")]
+        [Authorize("create:admin")]
+        public async Task<ActionResult> PatchUserToAdmin(String userId, String role)
+        {
+            try
+            {
+                await _repository.UpgradeUser(userId, role);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new {message = e.Message});
+            }
+        }
+
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         [Authorize("create:users")]
