@@ -15,13 +15,17 @@ namespace talenthubBE.Data.Repositories.Users
             _context = context;
             _configuration = configuration;
         }
-        public async Task<IEnumerable<UserDTO>?> GetAllUsers()
+        public async Task<IEnumerable<UserDTO>?> GetAllUsers(string orgId)
         {
             if (_context.Users == null)
             {
                 return null;
             }
-            var res = await _context.Users.Include("Developers").Include("Jobs").ToListAsync();
+            var res = await _context.Users
+                .Include("Developers")
+                .Include("Jobs")
+                .Where(u => u.OrganizationId == orgId)
+                .ToListAsync();
 
             List<UserDTO> users = new();
             foreach (User user in res)

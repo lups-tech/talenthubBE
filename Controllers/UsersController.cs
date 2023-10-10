@@ -22,9 +22,9 @@ namespace talenthubBE.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers(String orgId)
         {
-            IEnumerable<UserDTO>? response = await _repository.GetAllUsers();
+            IEnumerable<UserDTO>? response = await _repository.GetAllUsers(orgId);
             if(response == null)
             {
                 return NotFound();
@@ -92,6 +92,7 @@ namespace talenthubBE.Controllers
         }
 
         [HttpPost("/api/users/register")]
+        [Authorize("create:users")]
         public async Task<ActionResult> PostUserEmail(String email, String role, String name) 
         {
             string orgId = ControllerHelper.OrgIdFinder(User);
@@ -105,6 +106,7 @@ namespace talenthubBE.Controllers
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
+        [Authorize("create:users")]
         public async Task<IActionResult> DeleteUser(String id)
         {
             try
@@ -120,7 +122,6 @@ namespace talenthubBE.Controllers
         [HttpPatch("/api/userdeveloper")]
         public async Task<ActionResult<UserDTO>> AddUserDeveloper(UserDeveloperRequest request)
         {
-            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             UserDTO? response = await _repository.AddUserDeveloper(request);
             if(response == null)
             {
@@ -131,7 +132,7 @@ namespace talenthubBE.Controllers
         [HttpPatch("/api/userjob")]
         public async Task<ActionResult<UserDTO>> AddUserJob(UserJobRequest request)
         {
-            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
             UserDTO? response = await _repository.AddUserJob(request);
             if(response == null)
             {

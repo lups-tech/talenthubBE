@@ -23,7 +23,8 @@ namespace talenthubBE.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<JobDTO>>> GetJobs()
         {
-          IEnumerable<JobDTO>? response = await _repository.GetAllJobs();
+          String orgId = ControllerHelper.OrgIdFinder(User);
+          IEnumerable<JobDTO>? response = await _repository.GetAllJobs(orgId);
           if(response == null)
           {
             return NotFound();
@@ -35,7 +36,8 @@ namespace talenthubBE.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<JobDTO>> GetJob(Guid id)
         {
-            JobDTO? response = await _repository.GetJob(id);
+            String orgId = ControllerHelper.OrgIdFinder(User);
+            JobDTO? response = await _repository.GetJob(id, orgId);
             if (response == null)
             {
                 return NotFound();
@@ -52,14 +54,14 @@ namespace talenthubBE.Controllers
             {
                 return BadRequest();
             }
-
+            try
+            {
+            String orgId = ControllerHelper.OrgIdFinder(User);
             JobDTO? response = await _repository.PutJob(id, job);
             if(response == null)
             {
-                return NotFound(new {message = "No such skill found"});
+                return NotFound(new {message = "No such job found"});
             }
-            try
-            {
                 return Ok(response);
             }
             catch(Exception)

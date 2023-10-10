@@ -14,13 +14,16 @@ namespace talenthubBE.Data
     {
         private readonly MvcDataContext _context;
         public DevelopersRepository(MvcDataContext context) => _context = context;
-        public async Task<IEnumerable<DeveloperDTO>?> GetAllDevelopers()
+        public async Task<IEnumerable<DeveloperDTO>?> GetAllDevelopers(string orgId)
         {
             if (_context.Developers == null)
           {
               return null;
           }
-            var res = await _context.Developers.Include("Skills").ToListAsync();
+            var res = await _context.Developers
+                .Include("Skills")
+                .Where(d => d.OrganizationId == orgId)
+                .ToListAsync();
 
             List<DeveloperDTO> developers = new();
             foreach (Developer developer in res)
@@ -30,13 +33,16 @@ namespace talenthubBE.Data
 
             return developers;
         }
-        public async Task<DeveloperDTO?> GetDeveloper(Guid id)
+        public async Task<DeveloperDTO?> GetDeveloper(Guid id, string orgId)
         {
             if (_context.Developers == null)
             {
                 return null;
             }
-            var developer = await _context.Developers.Include("Skills").FirstOrDefaultAsync(d => d.Id == id);
+            var developer = await _context.Developers
+                .Include("Skills")
+                .Where(d => d.OrganizationId == orgId)
+                .FirstOrDefaultAsync(d => d.Id == id);
             if (developer == null)
             {
                 return null;
