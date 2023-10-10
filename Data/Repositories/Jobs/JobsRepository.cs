@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
+using NuGet.Protocol.Core.Types;
 using talenthubBE.Mapping;
 using talenthubBE.Migrations;
 using talenthubBE.Models;
@@ -11,14 +12,18 @@ namespace talenthubBE.Data
     {
         private readonly MvcDataContext _context;
         public JobsRepository(MvcDataContext context) => _context = context;
-        public async Task<IEnumerable<JobDTO>?> GetAllJobs()
+        public async Task<IEnumerable<JobDTO>?> GetAllJobs(String orgId)
         {
             if (_context.JobDescriptions == null)
             {
                 return null;
             }
             
-            var res = await _context.JobDescriptions.Include("Skills").ToListAsync();
+            var res = await _context.JobDescriptions
+                .Include("Skills")
+                .Include("Organizations")
+                .Where(j => j.Organizations.Any(o => o.Id == orgId))
+                .ToListAsync();
         
             List<JobDTO> jobs = new();
             foreach (Job job in res)
@@ -28,15 +33,15 @@ namespace talenthubBE.Data
 
             return jobs;
         }
-        public async Task<JobDTO?> GetJob(Guid id)
+        public async Task<JobDTO?> GetJob(Guid id, String orgId)
         {
             if (_context.JobDescriptions == null)
             {
                 return null;
             }
 
-            var job = await _context.JobDescriptions.Include("Skills").FirstOrDefaultAsync(j => j.Id == id);
-            if (job == null)
+            var job = await _context.JobDescriptions.Include("Skills").Include("Organizations").FirstOrDefaultAsync(j => j.Id == id);
+            if (job == null || !job.Organizations.Any(o => o.Id == orgId))
             {
                 return null;
             }

@@ -23,19 +23,21 @@ namespace talenthubBE.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DeveloperDTO>>> GetDevelopers()
         {
-          IEnumerable<DeveloperDTO>? response = await _repository.GetAllDevelopers();
-            if(response == null)
-            {
-                return NotFound();
-            }
-            return Ok(response);
+            string orgId = ControllerHelper.OrgIdFinder(User);
+            IEnumerable<DeveloperDTO>? response = await _repository.GetAllDevelopers(orgId);
+                if(response == null)
+                {
+                    return NotFound();
+                }
+                return Ok(response);
         }
 
         // GET: api/Developers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DeveloperDTO>> GetDeveloper(Guid id)
         {
-            DeveloperDTO? response = await _repository.GetDeveloper(id);
+            string orgId = ControllerHelper.OrgIdFinder(User);
+            DeveloperDTO? response = await _repository.GetDeveloper(id, orgId);
             if (response == null)
             {
                 return NotFound();
@@ -113,6 +115,12 @@ namespace talenthubBE.Controllers
                 return NoContent();
             }
             return NotFound();
+        }
+        [HttpGet("/api/testscope")]
+        [Authorize("create:admin")]
+        public IActionResult Test()
+        {
+            return Ok("It Worked!");
         }
     }
 }

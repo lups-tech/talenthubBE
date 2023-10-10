@@ -23,9 +23,9 @@ namespace talenthubBE.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers(String orgId)
         {
-            IEnumerable<UserDTO>? response = await _repository.GetAllUsers();
+            IEnumerable<UserDTO>? response = await _repository.GetAllUsers(orgId);
             if(response == null)
             {
                 return NotFound();
@@ -78,15 +78,36 @@ namespace talenthubBE.Controllers
             string orgId = ControllerHelper.OrgIdFinder(User);
 
             UserDTO? response = await _repository.PostUser(userId, orgId);
-            if(response == null)
+            try
+            {
+                if(response == null)
+                {
+                    return Ok();
+                }
+                return CreatedAtAction("GetUser", new { id = response.Id }, response);
+            }
+            catch
             {
                 return NotFound();
             }
-            return CreatedAtAction("GetUser", new { id = response.Id }, response);
+        }
+
+        [HttpPost("/api/users/register")]
+        [Authorize("create:users")]
+        public async Task<ActionResult> PostUserEmail(String email, String role, String name) 
+        {
+            string orgId = ControllerHelper.OrgIdFinder(User);
+            bool response = await _repository.RegisterUserWithAuth0(orgId, email, role, name);
+            if (!response)
+            {
+                return BadRequest();
+            }
+            return Ok();   
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
+        [Authorize("create:users")]
         public async Task<IActionResult> DeleteUser(String id)
         {
             try
@@ -100,13 +121,8 @@ namespace talenthubBE.Controllers
             return NoContent();
         }
         [HttpPatch("/api/userdeveloper")]
-        public async Task<ActionResult<UserDTO>> AddUserDeveloper(Guid developerId)
+        public async Task<ActionResult<UserDTO>> AddUserDeveloper(UserDeveloperRequest request)
         {
-            UserDeveloperRequest request = new()
-            {
-                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!,
-                DeveloperId = developerId,
-            };
             UserDTO? response = await _repository.AddUserDeveloper(request);
             if(response == null)
             {
@@ -117,7 +133,7 @@ namespace talenthubBE.Controllers
         [HttpPatch("/api/userjob")]
         public async Task<ActionResult<UserDTO>> AddUserJob(UserJobRequest request)
         {
-            String authId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
             UserDTO? response = await _repository.AddUserJob(request);
             if(response == null)
             {

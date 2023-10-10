@@ -14,13 +14,16 @@ namespace talenthubBE.Data
     {
         private readonly MvcDataContext _context;
         public DevelopersRepository(MvcDataContext context) => _context = context;
-        public async Task<IEnumerable<DeveloperDTO>?> GetAllDevelopers()
+        public async Task<IEnumerable<DeveloperDTO>?> GetAllDevelopers(string orgId)
         {
             if (_context.Developers == null)
           {
               return null;
           }
-            var res = await _context.Developers.Include("Skills").ToListAsync();
+            var res = await _context.Developers
+                .Include("Skills")
+                .Where(d => d.OrganizationId == orgId)
+                .ToListAsync();
 
             List<DeveloperDTO> developers = new();
             foreach (Developer developer in res)
@@ -30,13 +33,16 @@ namespace talenthubBE.Data
 
             return developers;
         }
-        public async Task<DeveloperDTO?> GetDeveloper(Guid id)
+        public async Task<DeveloperDTO?> GetDeveloper(Guid id, string orgId)
         {
             if (_context.Developers == null)
             {
                 return null;
             }
-            var developer = await _context.Developers.Include("Skills").FirstOrDefaultAsync(d => d.Id == id);
+            var developer = await _context.Developers
+                .Include("Skills")
+                .Where(d => d.OrganizationId == orgId)
+                .FirstOrDefaultAsync(d => d.Id == id);
             if (developer == null)
             {
                 return null;
@@ -71,10 +77,10 @@ namespace talenthubBE.Data
           {
               return null;
           }
-            Organization? org = await _context.Organizations.FirstOrDefaultAsync(o=> o.Id == orgId);
+            Organization? org = await _context.Organizations.SingleAsync(o=> o.Id == orgId);
             
             Developer newDev = request.ToDev(org);
-            User? devsUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            User? devsUser = await _context.Users.SingleAsync(u => u.Id == userId);
             newDev.Users.Add(devsUser);
             
             _context.Developers.Add(newDev);

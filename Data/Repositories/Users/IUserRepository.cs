@@ -9,9 +9,10 @@ namespace talenthubBE.Data.Repositories.Users
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<UserDTO>?> GetAllUsers();
+        Task<IEnumerable<UserDTO>?> GetAllUsers(String orgId);
         Task<UserDTO?> GetUser(String id);
         Task<UserDTO?> PutUser(String id, User User);
+        Task<bool> RegisterUserWithAuth0(String orgId, String email, String role, String name); 
         Task<UserDTO?> PostUser(String userId, String orgId);
         Task DeleteUser(String id);
         Task<UserDTO?> AddUserDeveloper(UserDeveloperRequest request);

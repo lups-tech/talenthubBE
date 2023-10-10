@@ -2,28 +2,36 @@ using Microsoft.EntityFrameworkCore;
 using talenthubBE.Mapping;
 using talenthubBE.Models;
 using talenthubBE.Models.Users;
+using System.Net.Http.Headers;
 
 namespace talenthubBE.Data.Repositories.Users
 {
     public class UserRepository : IUserRepository
     {
         private readonly MvcDataContext _context;
-        public UserRepository(MvcDataContext context) => _context = context;
-
-        public async Task<IEnumerable<UserDTO>?> GetAllUsers()
+        private readonly IConfiguration _configuration;
+        public UserRepository(MvcDataContext context, IConfiguration configuration)
+        {
+            _context = context;
+            _configuration = configuration;
+        }
+        public async Task<IEnumerable<UserDTO>?> GetAllUsers(string orgId)
         {
             if (_context.Users == null)
             {
                 return null;
             }
-            var res = await _context.Users.Include("Developers").Include("Jobs").ToListAsync();
+            var res = await _context.Users
+                .Include("Developers")
+                .Include("Jobs")
+                .Where(u => u.OrganizationId == orgId)
+                .ToListAsync();
 
             List<UserDTO> users = new();
             foreach (User user in res)
             {
                 users.Add(user.ToUserDTO());
             }
-
             return users;
         }
 
@@ -46,7 +54,7 @@ namespace talenthubBE.Data.Repositories.Users
         {
             if (_context.Users == null)
             {
-                return null;
+                throw new Exception("Database Issue");
             }
             if(_context.Users.Any(u => u.Id == userId))
             {
@@ -65,6 +73,62 @@ namespace talenthubBE.Data.Repositories.Users
             return newUser.ToUserDTO();
         }
 
+        public async Task<bool> RegisterUserWithAuth0(String orgId, String email, String role, String name)
+        {
+            if(!Enum.IsDefined(typeof(Roles), role))
+            {
+                return false;
+            }
+
+            String roleId = "";
+            switch (role)
+            {
+                case "Admin":
+                {
+                    roleId = "rol_xasNtUO2PeKyAGvZ";
+                    break;
+                }
+                case "Sales":
+                {
+                    roleId = "rol_SwiRJAqI5EUeA5vh";
+                    break;
+                }
+                default: throw new ArgumentException("Role not recognised");
+            }
+
+            HttpClient client = new(); 
+
+            Uri uri = new($"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/invitations");
+
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
+            client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+
+            InvitationEmail invitationEmail = new()
+            {
+                Inviter = new InviterClass()
+                {
+                    Name = name
+                },
+                Invitee = new InviteeClass()
+                {
+                    Email = email
+                },
+                ClientId = _configuration["Auth0:ClientId"]!,
+                ConnectionId = _configuration["connectionId"]!,
+                TtlSec = 0,
+                Roles =  new string[1] {roleId},
+                SendInvitationEmail = true,
+            };
+
+            JsonContent content = JsonContent.Create<InvitationEmail>(invitationEmail);
+            
+            var response = await client.PostAsync(uri, content);
+            response.EnsureSuccessStatusCode();
+
+            return true;
+        }
+        
         public async Task<UserDTO?> PutUser(String id, User user)
         {
             _context.Entry(user).State = EntityState.Modified;
@@ -193,6 +257,23 @@ namespace talenthubBE.Data.Repositories.Users
         private bool JobExists(Guid id)
         {
             return (_context.JobDescriptions?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+        private async Task<String?> GetManagementToken()
+        {
+            HttpClient client = new();
+            Uri uri = new($"{_configuration["Auth0:Domain"]}oauth/token");
+            var content = new FormUrlEncodedContent(new[] 
+            {
+                new KeyValuePair<String, String>("grant_type", "client_credentials"),
+                new KeyValuePair<String, String>("client_id", _configuration["Auth0:ManagementClientId"]!),
+                new KeyValuePair<String, String>("client_secret", _configuration["Auth0:ClientSecret"]!),
+                new KeyValuePair<String, String>("audience", $"{_configuration["Auth0:Domain"]}api/v2/"),
+            });
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+            var response = await client.PostAsync(uri, content);
+            response.EnsureSuccessStatusCode();
+            ManagementAPIResponse? jsonString = await response.Content.ReadFromJsonAsync<ManagementAPIResponse>();
+            return jsonString?.AccessToken;
         }
     }
 }

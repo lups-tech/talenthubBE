@@ -160,7 +160,7 @@ namespace talenthubBE.Controllers
             }
         }
 
-        [HttpPatch("api/organiztionsdeveloper")]
+        [HttpPatch("api/organizationsdeveloper")]
 
         public async Task<ActionResult<OrganizationDTO>> AddDeveloperToOrganization(String orgId, Guid userId)
         {
