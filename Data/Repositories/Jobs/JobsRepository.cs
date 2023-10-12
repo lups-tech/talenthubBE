@@ -74,13 +74,22 @@ namespace talenthubBE.Data
         public async Task<JobDTO?> PostJob(String userId, String orgId, CreateJobRequest request)
         {
             Organization orgToAdd = _context.Organizations.Single(o => o.Id == orgId);
+            User jobsUser = _context.Users.Single(u => u.Id == userId);
 
             if (_context.JobDescriptions.Any(j => j.JobTechId == request.JobTechId))
             {
                 Job selectedJob = _context.JobDescriptions.Single(j => j.JobTechId == request.JobTechId);
-                if (!selectedJob.Organizations.Any(o => o.Id == orgId))
+                if(!selectedJob.Organizations.Any(o => o.Id == orgId) || !selectedJob.Users.Any(u => u.Id == userId))
                 {
-                    selectedJob.Organizations.Add(orgToAdd);
+                    if (!selectedJob.Organizations.Any(o => o.Id == orgId))
+                    {
+                        selectedJob.Organizations.Add(orgToAdd);
+                        
+                    }
+                    if (!selectedJob.Users.Any(u => u.Id == userId))
+                    {
+                        selectedJob.Users.Add(jobsUser);
+                    }
                     await _context.SaveChangesAsync();
                     return selectedJob.ToJobDTO();
                 }
@@ -89,9 +98,7 @@ namespace talenthubBE.Data
 
             Job job = request.ToJob();
             job.Organizations.Add(orgToAdd);
-            User jobsUser = _context.Users.Single(u => u.Id == userId);
             job.Users.Add(jobsUser);
-
             _context.JobDescriptions.Add(job);
             var skillsToAdd = new List<Skill>();
             foreach (Guid skillId in request.SelectedSkillIds)
