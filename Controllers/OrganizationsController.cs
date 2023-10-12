@@ -34,7 +34,7 @@ namespace talenthubBE.Controllers
 
         // GET: api/Organizations/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Organization>> GetOrganization(String id)
+        public async Task<ActionResult<OrganizationDTO>> GetOrganization(String id)
         {
            OrganizationDTO? response = await _repository.GetOrganization(id);
             if (response == null)
@@ -71,7 +71,7 @@ namespace talenthubBE.Controllers
         // POST: api/Organizations
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Organization>> PostOrganization(String orgId)
+        public async Task<ActionResult<OrganizationDTO>> PostOrganization(String orgId)
         {
             OrganizationDTO? response = await _repository.PostOrganization(orgId);
             if(response == null)

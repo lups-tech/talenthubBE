@@ -23,7 +23,7 @@ namespace talenthubBE.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers(String orgId)
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers(String orgId)
         {
             IEnumerable<UserDTO>? response = await _repository.GetAllUsers(orgId);
             if(response == null)
@@ -35,7 +35,7 @@ namespace talenthubBE.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(String id)
+        public async Task<ActionResult<UserDTO>> GetUser(String id)
         {
            UserDTO? response = await _repository.GetUser(id);
             if (response == null)
@@ -72,7 +72,7 @@ namespace talenthubBE.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser() 
+        public async Task<ActionResult<UserDTO>> PostUser() 
         {
             string userId = ControllerHelper.UserIdFinder(User);
             string orgId = ControllerHelper.OrgIdFinder(User);
