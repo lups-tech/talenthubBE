@@ -37,7 +37,10 @@ namespace talenthubBE.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDTO>> GetUser(String id)
         {
-           UserDTO? response = await _repository.GetUser(id);
+            String currentUser = ControllerHelper.UserIdFinder(User);
+            UserDTO? response = id == "self" 
+                ? await _repository.GetUser(currentUser)
+                : await _repository.GetUser(id);
             if (response == null)
             {
                 return NotFound();
