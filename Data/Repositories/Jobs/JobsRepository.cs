@@ -78,13 +78,15 @@ namespace talenthubBE.Data
 
             if (_context.JobDescriptions.Any(j => j.JobTechId == request.JobTechId))
             {
-                Job selectedJob = _context.JobDescriptions.Single(j => j.JobTechId == request.JobTechId);
+                Job selectedJob = _context.JobDescriptions
+                    .Include("Organizations")
+                    .Include("Users")
+                    .Single(j => j.JobTechId == request.JobTechId);
                 if(!selectedJob.Organizations.Any(o => o.Id == orgId) || !selectedJob.Users.Any(u => u.Id == userId))
                 {
                     if (!selectedJob.Organizations.Any(o => o.Id == orgId))
                     {
                         selectedJob.Organizations.Add(orgToAdd);
-                        
                     }
                     if (!selectedJob.Users.Any(u => u.Id == userId))
                     {
