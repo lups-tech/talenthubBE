@@ -252,6 +252,10 @@ namespace talenthubBE.Data.Repositories.Users
                 .Single(j => j.Id == request.JobId); 
 
             selectedUser.Jobs.Remove(jobToRemove);
+            if(jobToRemove.Users.Count == 0)
+            {
+                _context.JobDescriptions.Remove(jobToRemove);
+            }
             await _context.SaveChangesAsync();
             return true;
         }
