@@ -12,11 +12,13 @@ Given that we are using this project to hone our .Net, ASP Net and C# skills, th
 ## The Endpoints
 Given the need to have many developers with many skills matched with many jobs (also requiring many skills), we have separated the controllers for Developers, Skills, Users and Jobs.
 
-Using Entity Framework, we set up Many-To-Many relationships between Developers and Skills, as well as Jobs and Skills. We also have many-to-many relationships between Users, Jobs and Developers.
+Using Entity Framework, we set up Many-To-Many relationships between Developers and Skills, as well as Jobs and Skills. We also have many-to-many relationships between Users, Jobs and Developers. We have also added a "Organizaton" entity, that represents separate business clients. Each Organization has multiple users (eg. staff, with a one-to-many relationship) and multiple jobs and developers (both many-to-many). Users can be either classed as Sales or Admin, with each role providing different scoped access to the endpoints.
 
-All four controllers have CRUD functionality, using a REST API. We have also added the ability to add and remove skills from Developers as separate endpoints, due to the structure of our frontend, and therefore the user journey.
+All controllers have CRUD functionality, using a REST API. We have also added the ability to add and remove relationships separately between entities, so as to allow for more flexbile interaction with the frontend.
 
 Within the Skill Controller, we have added the ability to take a given job advert and return the skills contained within that advert, as well as a list of relevant ranked developers (based on matching skills).
+
+The user controller is also able to directly call the Auth0 API, which allows for email invites to be sent to potential new organization members, as well as to upgrade existing members to an Admin role. This means that the project can utilize these capabilities directly, rather than via the Auth0 dashboard, allowing for more client autonomy.
 
 ## The Team
 This project has been built by the following developers:
@@ -32,6 +34,7 @@ Together we are [Lups-Tech](https://github.com/lups-tech).
 ## Next Steps
 We are approaching this project with an agile approach, consisting of 1 week sprint goals. Once we are happy with the MVP we have plans on refining the product and continuing to add value. Our current goals are to add:
 
-Authorization and Authentication - to allow for multiple companies to use the product, with their own private lists of developers (user authorization and authentication is now in place with third party log-in via google, as well as email and password).
-The ability to save jobs to your account, to allow for ease of access to those details during hiring processes, or should a developer become available.(Now added)
-Easier editing of existing developers.
+~~Authorization and Authentication - to allow for multiple companies to use the product, with their own private lists of developers (user authorization and authentication is now in place with third party log-in via google, as well as email and password).~~(Now added)
+~~The ability to save jobs to your account, to allow for ease of access to those details during hiring processes, or should a developer become available.~~(Now added)
+~~Easier editing of existing developers.~~(Now added)
+- Potential for a "process" entity is being discussed, that would allow for tracking of active recruitment processes. Implementation of this is currently being agreed upon.
