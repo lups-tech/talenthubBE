@@ -43,8 +43,8 @@ namespace talenthubBE.Data.Repositories.Users
                 return null;
             }
             var user = await _context.Users
-                .Include("Developers")
-                .Include("Jobs")
+                .Include(u => u.Developers).ThenInclude(d => d.Skills)
+                .Include(u => u.Jobs).ThenInclude(j => j.Skills)
                 .FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {

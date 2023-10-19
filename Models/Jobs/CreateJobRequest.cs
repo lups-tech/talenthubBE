@@ -14,6 +14,6 @@ namespace talenthubBE.Models.Jobs
         public required String JobTechId {get; set;}
         [Required]
         public required String JobText {get; set;}
-        public IEnumerable<Guid> SelectedSkillIds {get; set;} = default!;
+        public IEnumerable<Guid>? SelectedSkillIds {get; set;}
     }
 }
