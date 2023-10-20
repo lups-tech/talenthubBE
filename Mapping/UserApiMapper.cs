@@ -16,6 +16,7 @@ namespace talenthubBE.Mapping
             return new UserDTO
             {
                 Id = user.Id,
+                IsAdmin = user.IsAdmin,
                 Jobs = user.Jobs.JobsMapper(),
                 Developers = user.Developers.DevelopersMapper(),
             };

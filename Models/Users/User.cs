@@ -9,6 +9,7 @@ namespace talenthubBE.Models
         public required String Id { get; set; }
         [Column("created_at")]
         public DateTime CreatedAt {get; set;}
+        public bool IsAdmin {get; set;} = false;
         public ICollection<Job> Jobs { get; set; } = new List<Job>();
         public ICollection<Developer> Developers { get; set; } = new List<Developer>();
         public required String OrganizationId { get; set; }

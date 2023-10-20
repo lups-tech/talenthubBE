@@ -137,6 +137,9 @@ namespace talenthubBE.Data.Repositories.Users
             JsonContent content = JsonContent.Create<RolesRequest>(request);
             var response = await client.PostAsync(uri, content);
             response.EnsureSuccessStatusCode();
+            User selectedUser = _context.Users.Single(u => u.Id == userId);
+            selectedUser.IsAdmin = true;
+            await _context.SaveChangesAsync();
         }
         public async Task<UserDTO?> PutUser(String id, User user)
         {
