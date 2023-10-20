@@ -67,31 +67,31 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(
         "create:users", 
         policy => policy.Requirements.Add(
-            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]!
+            new HasScopeRequirement("create:users", builder.Configuration["Auth0:Domain"]!
         )
     ));
     options.AddPolicy(
         "edit:developers", 
         policy => policy.Requirements.Add(
-            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]!
+            new HasScopeRequirement("edit:developers", builder.Configuration["Auth0:Domain"]!
         )
     ));
     options.AddPolicy(
         "edit:jobs", 
         policy => policy.Requirements.Add(
-            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]!
+            new HasScopeRequirement("edit:jobs", builder.Configuration["Auth0:Domain"]!
         )
     ));
     options.AddPolicy(
         "edit:skills", 
         policy => policy.Requirements.Add(
-            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]!
+            new HasScopeRequirement("edit:skills", builder.Configuration["Auth0:Domain"]!
         )
     ));
     options.AddPolicy(
         "update:user", 
         policy => policy.Requirements.Add(
-            new HasScopeRequirement("create:admin", builder.Configuration["Auth0:Domain"]!
+            new HasScopeRequirement("update:user", builder.Configuration["Auth0:Domain"]!
         )
     ));
 });
