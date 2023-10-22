@@ -13,6 +13,9 @@ namespace talenthubBE.Mapping
             return new JobDTO
             {
                 Id = job.Id,
+                Title = job.Title,
+                Deadline = job.Deadline,
+                Employer = job.Employer,
                 JobTechId = job.JobTechId,
                 Url = job.Url,
                 JobText = job.JobText,
@@ -34,6 +37,9 @@ namespace talenthubBE.Mapping
             {
                 Id = new Guid(),
                 JobTechId = newJob.JobTechId,
+                Title = newJob.Title,
+                Deadline = newJob.Deadline,
+                Employer = newJob.Employer,
                 Url = newJob.Url,
                 JobText = newJob.JobText,
                 CreatedAt = DateTime.Now.ToUniversalTime(),
