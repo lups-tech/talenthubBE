@@ -13,6 +13,12 @@ namespace talenthubBE.Models.Jobs
         [Required]
         public required String JobTechId {get; set;}
         [Required]
+        public string? Title {get; set;}
+        [Required]
+        public string? Deadline {get; set;}
+        [Required]
+        public string? Employer {get; set;}
+        [Required]
         public required String JobText {get; set;}
         public IEnumerable<Guid>? SelectedSkillIds {get; set;}
     }

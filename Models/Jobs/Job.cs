@@ -7,6 +7,12 @@ public class Job
     public Guid Id {get; set;}
     [Column("jobTech_id")]
     public string? JobTechId {get; set;}
+    [Column("title")]
+    public string? Title {get; set;}
+    [Column("deadline")]
+    public string? Deadline {get; set;}
+    [Column("employer")]
+    public string? Employer {get; set;}
     [Column("url")]
     public String? Url {get; set;}
     [Column("job_text")]

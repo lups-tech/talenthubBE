@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
-using NuGet.Protocol.Core.Types;
 using talenthubBE.Mapping;
-using talenthubBE.Migrations;
 using talenthubBE.Models;
 using talenthubBE.Models.Jobs;
 
@@ -102,15 +100,19 @@ namespace talenthubBE.Data
             job.Organizations.Add(orgToAdd);
             job.Users.Add(jobsUser);
             _context.JobDescriptions.Add(job);
-            var skillsToAdd = new List<Skill>();
-            foreach (Guid skillId in request.SelectedSkillIds)
+            if (request.SelectedSkillIds != null)
             {
-                var currentSkill = _context.Skills
-                    .Single(skill => skill.Id == skillId);
-                skillsToAdd.Add(currentSkill);
-            }
+                var skillsToAdd = new List<Skill>();
+                foreach (Guid skillId in request.SelectedSkillIds)
+                {
+                    var currentSkill = _context.Skills
+                        .Single(skill => skill.Id == skillId);
+                    skillsToAdd.Add(currentSkill);
+                }
 
-            job.Skills.AddRange(skillsToAdd);
+                job.Skills.AddRange(skillsToAdd);
+            }
+            
             await _context.SaveChangesAsync();
 
             return job.ToJobDTO();
@@ -121,12 +123,7 @@ namespace talenthubBE.Data
             {
                 throw new Exception("context not found");
             }
-            var job = _context.JobDescriptions.Find(id);
-            if (job == null)
-            {
-               throw new Exception("job not found");
-            }
-
+            var job = _context.JobDescriptions.Find(id) ?? throw new Exception("job not found");
             _context.JobDescriptions.Remove(job);
             await _context.SaveChangesAsync();
 

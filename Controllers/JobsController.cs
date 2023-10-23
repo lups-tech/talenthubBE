@@ -77,7 +77,7 @@ namespace talenthubBE.Controllers
         {
             String userId = ControllerHelper.UserIdFinder(User);
             String orgId = ControllerHelper.OrgIdFinder(User);
-            
+
             JobDTO? response = await _repository.PostJob(userId, orgId, request);
             if(response == null)
             {
