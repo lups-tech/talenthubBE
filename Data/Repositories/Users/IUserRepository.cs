@@ -14,6 +14,7 @@ namespace talenthubBE.Data.Repositories.Users
         Task<UserDTO?> PutUser(String id, User User);
         Task<bool> RegisterUserWithAuth0(String orgId, String email, String role, String name);
         Task UpgradeUser(String userId, String role);
+        Task EditUser(String userId, String name);
         Task<UserDTO?> PostUser(String userId, String orgId);
         Task DeleteUser(String id);
         Task<UserDTO?> AddUserDeveloper(UserDeveloperRequest request);

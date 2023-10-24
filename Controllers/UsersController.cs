@@ -108,6 +108,14 @@ namespace talenthubBE.Controllers
             return Ok();   
         }
 
+        [HttpPatch("/api/users/edit")]
+        public async Task<ActionResult> EditUserDetails(String nickname) 
+        {
+            string userId = ControllerHelper.UserIdFinder(User);
+            await _repository.EditUser(userId, nickname);
+            return Ok();   
+        }
+
         [HttpPatch("/api/users/upgrade")]
         [Authorize("create:admin")]
         public async Task<ActionResult> PatchUserToAdmin(String userId, String role)
