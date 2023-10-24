@@ -143,7 +143,7 @@ namespace talenthubBE.Data.Repositories.Users
             selectedUser.IsAdmin = true;
             await _context.SaveChangesAsync();
         }
-        public async Task EditUser(String userId, String nickname)
+        public async Task EditUser(String userId, String name, String nickname)
         {
             HttpClient client = new();
             string uri = $"{_configuration["Auth0:Domain"]}api/v2/users/{userId}";
@@ -151,6 +151,7 @@ namespace talenthubBE.Data.Repositories.Users
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
             EditUserViaAPI request = new()
             {
+                Name = name,
                 Nickname = nickname,
                 Username = nickname,
             };
