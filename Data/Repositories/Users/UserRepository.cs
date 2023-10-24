@@ -4,6 +4,8 @@ using talenthubBE.Models;
 using talenthubBE.Models.Users;
 using System.Net.Http.Headers;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using talenthubBE.Models.Auth0ApiCalls;
+using NuGet.ContentModel;
 
 namespace talenthubBE.Data.Repositories.Users
 {
@@ -140,6 +142,21 @@ namespace talenthubBE.Data.Repositories.Users
             User selectedUser = _context.Users.Single(u => u.Id == userId);
             selectedUser.IsAdmin = true;
             await _context.SaveChangesAsync();
+        }
+        public async Task EditUser(String userId, String nickname)
+        {
+            HttpClient client = new();
+            string uri = $"{_configuration["Auth0:Domain"]}api/v2/users/{userId}";
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
+            EditUserViaAPI request = new()
+            {
+                Nickname = nickname,
+                Username = nickname,
+            };
+            JsonContent content = JsonContent.Create<EditUserViaAPI>(request);
+            var response = await client.PatchAsync(uri, content);
+            response.EnsureSuccessStatusCode();
         }
         public async Task<UserDTO?> PutUser(String id, User user)
         {
