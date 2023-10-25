@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using talenthubBE.Data.Repositories.Users;
 using talenthubBE.Helpers;
 using talenthubBE.Models;
+using talenthubBE.Models.Auth0ApiCalls;
 using talenthubBE.Models.Users;
 
 namespace talenthubBE.Controllers
@@ -109,10 +110,10 @@ namespace talenthubBE.Controllers
         }
 
         [HttpPatch("/api/users/edit")]
-        public async Task<ActionResult> EditUserDetails(String name, String nickname) 
+        public async Task<ActionResult> EditUserDetails( EditUserRequest request) 
         {
             string userId = ControllerHelper.UserIdFinder(User);
-            await _repository.EditUser(userId, name, nickname);
+            await _repository.EditUser(userId, request.Name, request.Nickname);
             return Ok();   
         }
 
