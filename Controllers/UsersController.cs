@@ -109,10 +109,10 @@ namespace talenthubBE.Controllers
         }
 
         [HttpPatch("/api/users/edit")]
-        public async Task<ActionResult> EditUserDetails(String name, String nickname) 
+        public async Task<ActionResult> EditUserDetails(String name, String nickname, String password) 
         {
             string userId = ControllerHelper.UserIdFinder(User);
-            await _repository.EditUser(userId, name, nickname);
+            await _repository.EditUser(userId, name, nickname, password);
             return Ok();   
         }
 
