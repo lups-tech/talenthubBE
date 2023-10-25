@@ -144,7 +144,7 @@ namespace talenthubBE.Data.Repositories.Users
             selectedUser.IsAdmin = true;
             await _context.SaveChangesAsync();
         }
-        public async Task EditUser(String userId, String name, String nickname, String password)
+        public async Task EditUser(String userId, String name, String nickname, String? password)
         {
             HttpClient client = new();
             string uri = $"{_configuration["Auth0:Domain"]}api/v2/users/{userId}";
@@ -154,9 +154,12 @@ namespace talenthubBE.Data.Repositories.Users
             {
                 Name = name,
                 Nickname = nickname,
-                Password = password,
                 Username = nickname,
             };
+            if(password != String.Empty)
+            {
+                request.Password = password;
+            }
             JsonContent content = JsonContent.Create<EditUserViaAPI>(request);
             var response = await client.PatchAsync(uri, content);
             response.EnsureSuccessStatusCode();
