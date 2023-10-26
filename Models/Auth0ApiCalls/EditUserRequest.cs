@@ -7,9 +7,10 @@ namespace talenthubBE.Models.Auth0ApiCalls
 
     {
        [Required]
+       [JsonPropertyName("name")]
         public required string Name {get; set;}
        [Required]
-        public required string Nickname {get; set;}
-    
+       [JsonPropertyName("email")]
+        public required string Email {get; set;}
     }
 }
