@@ -145,19 +145,13 @@ namespace talenthubBE.Data.Repositories.Users
             selectedUser.IsAdmin = true;
             await _context.SaveChangesAsync();
         }
-        public async Task EditUser(String userId, String name, String nickname)
+        public async Task EditUser(String userId, EditUserRequest request)
         {
             HttpClient client = new();
             string uri = $"{_configuration["Auth0:Domain"]}api/v2/users/{userId}";
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
-            EditUserViaAPI request = new()
-            {
-                Name = name,
-                Nickname = nickname,
-                Username = nickname,
-            };
-            JsonContent content = JsonContent.Create<EditUserViaAPI>(request);
+            JsonContent content = JsonContent.Create<EditUserRequest>(request);
             var response = await client.PatchAsync(uri, content);
             response.EnsureSuccessStatusCode();
         }

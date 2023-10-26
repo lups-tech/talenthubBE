@@ -113,7 +113,7 @@ namespace talenthubBE.Controllers
         public async Task<ActionResult> EditUserDetails(EditUserRequest request) 
         {
             string userId = ControllerHelper.UserIdFinder(User);
-            await _repository.EditUser(userId, request.Name, request.Nickname);
+            await _repository.EditUser(userId, request);
             return Ok();   
         }
 
