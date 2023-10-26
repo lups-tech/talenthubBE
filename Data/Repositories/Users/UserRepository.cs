@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using talenthubBE.Models.Auth0ApiCalls;
 using NuGet.ContentModel;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.Differencing;
 
 namespace talenthubBE.Data.Repositories.Users
 {
@@ -157,6 +158,16 @@ namespace talenthubBE.Data.Repositories.Users
                 Username = nickname,
             };
             JsonContent content = JsonContent.Create<EditUserViaAPI>(request);
+            var response = await client.PatchAsync(uri, content);
+            response.EnsureSuccessStatusCode();
+        }
+        public async Task EditPassword(String userId, EditPasswordRequest request)
+        {
+            HttpClient client = new();
+            string uri = $"{_configuration["Auth0:Domain"]}api/v2/users/{userId}";
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
+            JsonContent content = JsonContent.Create<EditPasswordRequest>(request);
             var response = await client.PatchAsync(uri, content);
             response.EnsureSuccessStatusCode();
         }
