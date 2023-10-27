@@ -8,6 +8,7 @@ using talenthubBE.Models.Auth0ApiCalls;
 using NuGet.ContentModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.Differencing;
+using Newtonsoft.Json;
 
 namespace talenthubBE.Data.Repositories.Users
 {
@@ -58,6 +59,16 @@ namespace talenthubBE.Data.Repositories.Users
             return user.ToUserDTO();
         }
 
+        public async Task<IEnumerable<Auth0User>?> GetAuth0Users(String orgId)
+        {
+            HttpClient client = new();
+            string uri = $"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/members";
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
+            var response = await client.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            var jsonResponse = JsonConvert.DeserializeObject<IEnumerable<Auth0User>?>(await response.Content.ReadAsStringAsync());
+            return jsonResponse;
+        }
         public async Task<UserDTO?> PostUser(String userId, String orgId)
         {
             if (_context.Users == null)

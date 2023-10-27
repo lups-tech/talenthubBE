@@ -34,6 +34,15 @@ namespace talenthubBE.Controllers
             return Ok(response);
         }
 
+        [HttpGet("/api/auth0users")]
+        [Authorize("create:users")]
+        public async Task<ActionResult<IEnumerable<Auth0User>>> GetAuth0Users()
+        {
+            string orgId = ControllerHelper.OrgIdFinder(User);
+            IEnumerable<Auth0User>? response = await _repository.GetAuth0Users(orgId);
+            return Ok(response);
+        }
+
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDTO>> GetUser(String id)
