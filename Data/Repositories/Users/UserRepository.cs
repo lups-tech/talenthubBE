@@ -9,6 +9,7 @@ using NuGet.ContentModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.Differencing;
 using Newtonsoft.Json;
+using System.IO.Compression;
 
 namespace talenthubBE.Data.Repositories.Users
 {
@@ -59,15 +60,25 @@ namespace talenthubBE.Data.Repositories.Users
             return user.ToUserDTO();
         }
 
-        public async Task<IEnumerable<Auth0User>?> GetAuth0Users(String orgId)
+        public async Task<IEnumerable<Auth0User>?> GetAuth0Sales(String orgId)
         {
-            HttpClient client = new();
-            string uri = $"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/members";
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
-            var response = await client.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
-            var jsonResponse = JsonConvert.DeserializeObject<IEnumerable<Auth0User>?>(await response.Content.ReadAsStringAsync());
-            return jsonResponse;
+            IEnumerable<Auth0User>? auth0Users = await GetAuth0Users(orgId);
+            var dbSales= await _context.Users
+                .Where(o => o.OrganizationId == orgId)
+                .Where(u => u.IsAdmin == false)
+                .ToListAsync();
+            
+            return auth0Users?.Where(auth0user => dbSales.Any(dbUser => dbUser.Id == auth0user.Auth0Id));
+        }
+        public async Task<IEnumerable<Auth0User>?> GetAuth0Admins(String orgId)
+        {
+            IEnumerable<Auth0User>? auth0Users = await GetAuth0Users(orgId);
+            var dbSales= await _context.Users
+                .Where(o => o.OrganizationId == orgId)
+                .Where(u => u.IsAdmin == true)
+                .ToListAsync();
+            
+            return auth0Users?.Where(auth0user => dbSales.Any(dbUser => dbUser.Id == auth0user.Auth0Id));
         }
         public async Task<UserDTO?> PostUser(String userId, String orgId)
         {
@@ -334,6 +345,16 @@ namespace talenthubBE.Data.Repositories.Users
                 "Sales" => "rol_SwiRJAqI5EUeA5vh",
                 _ => throw new ArgumentException("Role not recognised")
             };
+        }
+        private async Task<IEnumerable<Auth0User>?> GetAuth0Users(string orgId)
+        {
+            HttpClient client = new();
+            string uri = $"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/members";
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
+            var response = await client.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            var jsonResponse = JsonConvert.DeserializeObject<IEnumerable<Auth0User>?>(await response.Content.ReadAsStringAsync());
+            return jsonResponse;
         }
     }
 }

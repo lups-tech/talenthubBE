@@ -34,12 +34,20 @@ namespace talenthubBE.Controllers
             return Ok(response);
         }
 
-        [HttpGet("/api/auth0users")]
+        [HttpGet("/api/auth0sales")]
         [Authorize("create:users")]
-        public async Task<ActionResult<IEnumerable<Auth0User>>> GetAuth0Users()
+        public async Task<ActionResult<IEnumerable<Auth0User>>> GetAuth0Sales()
         {
             string orgId = ControllerHelper.OrgIdFinder(User);
-            IEnumerable<Auth0User>? response = await _repository.GetAuth0Users(orgId);
+            IEnumerable<Auth0User>? response = await _repository.GetAuth0Sales(orgId);
+            return Ok(response);
+        }
+        [HttpGet("/api/auth0admin")]
+        [Authorize("create:users")]
+        public async Task<ActionResult<IEnumerable<Auth0User>>> GetAuth0Admins()
+        {
+            string orgId = ControllerHelper.OrgIdFinder(User);
+            IEnumerable<Auth0User>? response = await _repository.GetAuth0Admins(orgId);
             return Ok(response);
         }
 
