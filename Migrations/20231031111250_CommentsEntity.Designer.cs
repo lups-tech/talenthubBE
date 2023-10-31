@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace talenthubBE.Migrations
 {
     [DbContext(typeof(MvcDataContext))]
-    partial class MvcDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231031111250_CommentsEntity")]
+    partial class CommentsEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,28 +198,22 @@ namespace talenthubBE.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CommentText")
-                        .HasColumnType("text")
-                        .HasColumnName("comment_text");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("DeveloperId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("developer_id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("UserEmail")
-                        .HasColumnType("text")
-                        .HasColumnName("user_email");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("text")
-                        .HasColumnName("user_id");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

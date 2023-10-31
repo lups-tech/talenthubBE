@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using talenthubBE.Data;
 using talenthubBE.Data.Repositories;
+using talenthubBE.Data.Repositories.Comments;
 using talenthubBE.Data.Repositories.Organizations;
 using talenthubBE.Data.Repositories.Users;
 using talenthubBE.Security;
@@ -101,6 +102,7 @@ builder.Services.AddScoped<ISkillsRepository, SkillsRepository>();
 builder.Services.AddScoped<IDevelopersRepository, DevelopersRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrganizationRepository, OrganizationsRepository>();
+builder.Services.AddScoped<ICommentsRepository, CommentsRepository>();
 
 // CORS
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";

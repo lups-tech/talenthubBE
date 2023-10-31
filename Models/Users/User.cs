@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using talenthubBE.Models.Comments;
 
 namespace talenthubBE.Models
 {
@@ -12,6 +13,7 @@ namespace talenthubBE.Models
         public bool IsAdmin {get; set;} = false;
         public ICollection<Job> Jobs { get; set; } = new List<Job>();
         public ICollection<Developer> Developers { get; set; } = new List<Developer>();
+        public ICollection<Comment> Comments { get; } = new List<Comment>();
         public required String OrganizationId { get; set; }
         public required Organization Organization { get; set; } = null!;
     }

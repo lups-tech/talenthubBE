@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using talenthubBE.Models;
+using talenthubBE.Models.Comments;
 
 public class Developer
 {
@@ -15,6 +16,7 @@ public class Developer
     public ICollection<User> Users { get; } = new List<User>();
     public required String OrganizationId { get; set; }
     public required Organization Organization { get; set; } = null!;
+    public ICollection<Comment> Comments { get; } = new List<Comment>();
 
 }
 
