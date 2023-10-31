@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using talenthubBE.Models;
+using talenthubBE.Models.Comments;
 using talenthubBE.Models.Developers;
 
 namespace talenthubBE.Mapping
@@ -17,6 +18,7 @@ namespace talenthubBE.Mapping
                 Name = developer.Name,
                 Email = developer.Email,
                 Skills = developer.Skills.SkillsMapper(),
+                Comments = developer.Comments.CommentsMapper()
             };
         }
         public static DevSkillDTO ToDevSkillDTO(this Skill skill)
@@ -46,6 +48,16 @@ namespace talenthubBE.Mapping
             foreach (Skill skill in skills)
             {
                 output.Add(skill.ToDevSkillDTO());
+            }
+
+            return output;
+        }
+        private static List<CommentDTO> CommentsMapper (this ICollection<Comment> comments)
+        {
+            List<CommentDTO> output = new();
+            foreach (Comment comment in comments)
+            {
+                output.Add(comment.ToCommentDTO());
             }
 
             return output;

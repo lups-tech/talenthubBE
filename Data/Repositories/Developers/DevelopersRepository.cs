@@ -22,6 +22,7 @@ namespace talenthubBE.Data
           }
             var res = await _context.Developers
                 .Include("Skills")
+                .Include(d => d.Comments)
                 .Where(d => d.OrganizationId == orgId)
                 .ToListAsync();
 
@@ -41,6 +42,7 @@ namespace talenthubBE.Data
             }
             var developer = await _context.Developers
                 .Include("Skills")
+                .Include(d => d.Comments)
                 .Where(d => d.OrganizationId == orgId)
                 .FirstOrDefaultAsync(d => d.Id == id);
             if (developer == null)
