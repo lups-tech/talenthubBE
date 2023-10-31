@@ -73,11 +73,11 @@ namespace talenthubBE.Controllers
         // POST: api/Comments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<CommentDTO>> PostComment(CreateCommentRequest request, Guid developerId)
+        public async Task<ActionResult<CommentDTO>> PostComment(CreateCommentRequest request)
         {
             string userId = ControllerHelper.UserIdFinder(User);
 
-            CommentDTO? response = await _repository.PostComment(userId, developerId, request);
+            CommentDTO? response = await _repository.PostComment(userId, request);
             if(response == null)
             {
                 return NotFound();
