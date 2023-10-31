@@ -7,7 +7,7 @@ namespace talenthubBE.Data.Repositories.Comments
         Task<IEnumerable<CommentDTO>?> GetAllUserComments(string userId);
         Task<CommentDTO?> GetComment(Guid id);
         Task<CommentDTO?> PutComment(Guid id, Comment comment);
-        Task<CommentDTO?> PostComment(string userId, Guid developerId, CreateCommentRequest request);
+        Task<CommentDTO?> PostComment(string userId, CreateCommentRequest request);
         Task DeleteComment(Guid id);
     }
 }

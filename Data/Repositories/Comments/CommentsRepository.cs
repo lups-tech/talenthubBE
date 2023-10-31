@@ -44,14 +44,14 @@ namespace talenthubBE.Data.Repositories.Comments
             return comment.ToCommentDTO();
         }
 
-        public async Task<CommentDTO?> PostComment(string userId, Guid developerId, CreateCommentRequest request)
+        public async Task<CommentDTO?> PostComment(string userId, CreateCommentRequest request)
         {
             if (_context.Comments == null)
             {
                 return null;
             }
             User user = await _context.Users.SingleAsync(u => u.Id == userId);
-            Developer developer = await _context.Developers.SingleAsync(d=> d.Id == developerId);
+            Developer developer = await _context.Developers.SingleAsync(d=> d.Id == request.DeveloperId);
             
             Comment comment = request.ToComment(user, developer);
             _context.Comments.Add(comment);
