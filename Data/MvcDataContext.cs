@@ -19,5 +19,9 @@ public class MvcDataContext : DbContext
         
         public DbSet<Organization> Organizations { get; set; } = default!;
         public DbSet<Comment> Comments { get; set; } = default!;
+        public DbSet<MatchingProcess> MatchingProcesses { get; set; } = default!;
+        public DbSet<InterviewData> Interviews { get; set; } = default!;
+        public DbSet<ContractData> Contracts { get; set; } = default!;
+        public DbSet<ProposedData> Proposals { get; set; } = default!;
         
     }

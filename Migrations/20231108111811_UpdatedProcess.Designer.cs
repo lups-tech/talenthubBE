@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace talenthubBE.Migrations
 {
     [DbContext(typeof(MvcDataContext))]
-    partial class MvcDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231108111811_UpdatedProcess")]
+    partial class UpdatedProcess
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,7 +249,7 @@ namespace talenthubBE.Migrations
 
                     b.HasIndex("MatchingProcessId");
 
-                    b.ToTable("Contracts");
+                    b.ToTable("ContractData");
                 });
 
             modelBuilder.Entity("talenthubBE.Models.InterviewData", b =>
@@ -271,7 +274,7 @@ namespace talenthubBE.Migrations
 
                     b.HasIndex("MatchingProcessId");
 
-                    b.ToTable("Interviews");
+                    b.ToTable("InterviewData");
                 });
 
             modelBuilder.Entity("talenthubBE.Models.MatchingProcess", b =>
@@ -311,7 +314,7 @@ namespace talenthubBE.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MatchingProcesses");
+                    b.ToTable("MatchingProcesseses");
                 });
 
             modelBuilder.Entity("talenthubBE.Models.Organization", b =>
@@ -349,7 +352,7 @@ namespace talenthubBE.Migrations
                     b.HasIndex("MatchingProcessId")
                         .IsUnique();
 
-                    b.ToTable("Proposals");
+                    b.ToTable("ProposedData");
                 });
 
             modelBuilder.Entity("talenthubBE.Models.User", b =>

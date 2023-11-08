@@ -6,6 +6,7 @@ using talenthubBE.Data;
 using talenthubBE.Data.Repositories;
 using talenthubBE.Data.Repositories.Comments;
 using talenthubBE.Data.Repositories.Organizations;
+using talenthubBE.Data.Repositories.Process;
 using talenthubBE.Data.Repositories.Users;
 using talenthubBE.Security;
 
@@ -103,6 +104,7 @@ builder.Services.AddScoped<IDevelopersRepository, DevelopersRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrganizationRepository, OrganizationsRepository>();
 builder.Services.AddScoped<ICommentsRepository, CommentsRepository>();
+builder.Services.AddScoped<IMatchingProcessRepository, MatchingProcessRepository>();
 
 // CORS
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";

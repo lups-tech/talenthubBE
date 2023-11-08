@@ -22,4 +22,5 @@ public class Job
     public ICollection<Skill> Skills { get; } = new List<Skill>();
     public ICollection<User> Users { get; } = new List<User>();
     public ICollection<Organization> Organizations { get; } = new List<Organization>();
+    public ICollection<MatchingProcess> Processes { get; } = new List<MatchingProcess>();
 }

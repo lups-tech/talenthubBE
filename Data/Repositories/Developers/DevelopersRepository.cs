@@ -17,9 +17,9 @@ namespace talenthubBE.Data
         public async Task<IEnumerable<DeveloperDTO>?> GetAllDevelopers(string orgId)
         {
             if (_context.Developers == null)
-          {
-              return null;
-          }
+            {
+                return null;
+            }
             var res = await _context.Developers
                 .Include("Skills")
                 .Include(d => d.Comments)
