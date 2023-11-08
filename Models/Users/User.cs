@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+
 using talenthubBE.Models.Comments;
+
 
 namespace talenthubBE.Models
 {
@@ -16,5 +17,6 @@ namespace talenthubBE.Models
         public ICollection<Comment> Comments { get; } = new List<Comment>();
         public required String OrganizationId { get; set; }
         public required Organization Organization { get; set; } = null!;
+        public ICollection<MatchingProcess> Processes { get; } = new List<MatchingProcess>();
     }
 }

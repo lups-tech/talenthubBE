@@ -17,6 +17,7 @@ public class Developer
     public required String OrganizationId { get; set; }
     public required Organization Organization { get; set; } = null!;
     public ICollection<Comment> Comments { get; } = new List<Comment>();
+    public ICollection<MatchingProcess> Processes { get; } = new List<MatchingProcess>();
 
 }
 
