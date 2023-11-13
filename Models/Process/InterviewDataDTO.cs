@@ -5,6 +5,6 @@ namespace talenthubBE.Models
         public Guid Id {get; set;}
         public DateTime Date {get; set;}
         public required string InterviewType {get; set;}
-        public bool Passed {get; set;}
+        public bool? Passed {get; set;}
     }
 }
