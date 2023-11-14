@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 
 namespace talenthubBE.Models
 {
-    public class ProposedDataDTO
+    public class ProposedData
     {
         public Guid Id {get; set;}
-        public DateTime Date {get; set;}
+        public DateTime? Date {get; set;}
         public bool Succeeded {get; set;}
+        public Guid MatchingProcessId {get; set;}
+        public MatchingProcess MatchingProcess {get; set;} = null!;
     }
 }

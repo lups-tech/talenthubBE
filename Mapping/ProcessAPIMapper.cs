@@ -74,6 +74,17 @@ namespace talenthubBE.Mapping
             };
         }
 
+        public static ProposedData ToProposal(ProposedDataDTO proposal, MatchingProcess process)
+        {
+            return new ProposedData
+            {
+                Id = proposal.Id,
+                Date = proposal.Date,
+                Succeeded = proposal.Succeeded,
+                MatchingProcessId = process.Id,
+                MatchingProcess = process,
+            };
+        }
         private static ProposedDataDTO? ProposedChecker(ProposedData? proposedData)
         {
             if (proposedData == null)
