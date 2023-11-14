@@ -1,4 +1,5 @@
 
+using System.Diagnostics.Contracts;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
@@ -82,20 +83,6 @@ namespace talenthubBE.Data.Repositories.Process
                 .Include(p => p.Contracts)
                 .SingleAsync<MatchingProcess>(p => p.Id == request.Id);
             
-            if(request.Proposed != null)
-            {
-                _context.Proposals.Add(ProposalConverter(request.Proposed, process));
-                await _context.SaveChangesAsync();
-                process.Proposed = request.Proposed.ToProposed(process);
-            }
-            if(request.Interviews.Any())
-            {
-                _context.Interviews.AddRange(InterviewConverter(request.Interviews, process));
-            }
-            if(request.Contracts.Any())
-            {
-                _context.Contracts.AddRange(ContractConverter(request.Contracts, process));
-            }
             if(request.Placed != null)
             {
                 process.Placed = request.Placed;
@@ -107,47 +94,90 @@ namespace talenthubBE.Data.Repositories.Process
             await _context.SaveChangesAsync();
             return process.ToMatchingProcessDTO();
         }
-        public async Task<MatchingProcessDTO?> EditProcess(EditProcessRequest request)
+        public async Task<MatchingProcessDTO?> PatchProposed(Guid processId, ProposedDataDTO request)
         {
-            if (_context.MatchingProcesses == null)
-            {
-              return null;
-            }
-            MatchingProcess process = await _context.MatchingProcesses
+             MatchingProcess? process = await _context.MatchingProcesses
                 .Include(p => p.Proposed)
                 .Include(p => p.Interviews)
                 .Include(p => p.Contracts)
-                .SingleAsync<MatchingProcess>(p => p.Id == request.Id);
+                .SingleOrDefaultAsync(p => p.Id == processId) 
+                ?? throw new Exception("Matching Process not found");
             
-            if(request.Proposed == null)
+            if(!_context.Proposals.Any(i => i.Id == request.Id))
             {
-                process.Proposed = null;
+                ProposedData newProposed = request.ToProposed(process);
+                _context.Proposals.Add(newProposed);
+                await _context.SaveChangesAsync();
             }
-            if(request.Interviews.Any())
+            else 
             {
-                var interviewsToRemove = process.Interviews
-                    .IntersectBy(request.Interviews.Select(i => i.Id), i => i.Id);
-                _context.Interviews.RemoveRange(interviewsToRemove);
+                ProposedData proposalToPatch = await _context.Proposals
+                    .SingleOrDefaultAsync(i => i.Id == request.Id)
+                    ?? throw new Exception("Proposal not found");
+                
+                proposalToPatch.Date = request.Date;
+                proposalToPatch.Succeeded = request.Succeeded;
+                await _context.SaveChangesAsync();
             }
-            if(request.Contracts.Any())
+            return process.ToMatchingProcessDTO();
+        }
+        
+        public async Task<MatchingProcessDTO?> PatchInterview(Guid processId, InterviewDataDTO request)
+        {
+            MatchingProcess? process = await _context.MatchingProcesses
+                .Include(p => p.Proposed)
+                .Include(p => p.Interviews)
+                .Include(p => p.Contracts)
+                .SingleOrDefaultAsync(p => p.Id == processId) 
+                ?? throw new Exception("Matching Process not found");
+            
+            if(!_context.Interviews.Any(i => i.Id == request.Id))
             {
-                var ContractsToRemove = process.Contracts
-                    .IntersectBy(request.Contracts.Select(i => i.Id), i => i.Id);
-                    _context.Contracts.RemoveRange(ContractsToRemove);
+                InterviewData newInterview = request.ToInterview(process);
+                _context.Interviews.Add(newInterview);
+                await _context.SaveChangesAsync();
             }
-            if(request.Placed == null)
+            else 
             {
-                process.Placed = null;
+                InterviewData interviewToPatch = await _context.Interviews
+                    .SingleOrDefaultAsync(i => i.Id == request.Id)
+                    ?? throw new Exception("Interview not found");
+                
+                interviewToPatch.InterviewType = (int)Enum.Parse(typeof(InterviewTypes), request.InterviewType);
+                interviewToPatch.Date = request.Date;
+                interviewToPatch.Passed = request.Passed;
+                await _context.SaveChangesAsync();
             }
-            if(request.ResultDate == null)
-            {
-                process.ResultDate = null;
-            }
-            _context.Entry(process).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
             return process.ToMatchingProcessDTO();
         }
 
+        public async Task<MatchingProcessDTO?> PatchContract(Guid processId, ContractDataDTO request)
+        {
+             MatchingProcess? process = await _context.MatchingProcesses
+                .Include(p => p.Proposed)
+                .Include(p => p.Interviews)
+                .Include(p => p.Contracts)
+                .SingleOrDefaultAsync(p => p.Id == processId) 
+                ?? throw new Exception("Matching Process not found");
+            
+            if(!_context.Contracts.Any(i => i.Id == request.Id))
+            {
+                ContractData newContract = request.ToContract(process);
+                _context.Contracts.Add(newContract);
+                await _context.SaveChangesAsync();
+            }
+            else 
+            {
+                ContractData ContractToPatch = await _context.Contracts
+                    .SingleOrDefaultAsync(i => i.Id == request.Id)
+                    ?? throw new Exception("Contract not found");
+                
+                ContractToPatch.Date = request.Date;
+                ContractToPatch.ContractStage = (int)Enum.Parse(typeof(ContractStages), request.ContractStage);
+                await _context.SaveChangesAsync();
+            }
+            return process.ToMatchingProcessDTO();
+        }
         public async Task DeleteProcess(Guid id)
         {
             if (_context.MatchingProcesses == null)
@@ -155,40 +185,50 @@ namespace talenthubBE.Data.Repositories.Process
                 throw new Exception("context not found");
             }
             var process = _context.MatchingProcesses.Find(id) ?? 
-                throw new Exception("Developer not found");
+                throw new Exception("Process not found");
             _context.MatchingProcesses.Remove(process);
             await _context.SaveChangesAsync();
 
             return;
         }
-        private List<ContractData> ContractConverter(IEnumerable<ContractDataDTO> contracts, MatchingProcess process)
+        public async Task DeleteProposal(Guid id)
         {
-            List<ContractData> output = new();
-            foreach(ContractDataDTO dto in contracts)
+            if (_context.Proposals == null)
             {
-                output.Add(dto.ToContract(process));
+                throw new Exception("context not found");
             }
-            return output;
+            var proposal = _context.Proposals.Find(id) ?? 
+                throw new Exception("Proposal not found");
+            _context.Proposals.Remove(proposal);
+            await _context.SaveChangesAsync();
+
+            return;
         }
-        private List<InterviewData> InterviewConverter(IEnumerable<InterviewDataDTO> interviews, MatchingProcess process)
+        public async Task DeleteInterview(Guid id)
         {
-            List<InterviewData> output = new();
-            foreach(InterviewDataDTO dto in interviews)
+            if (_context.Interviews == null)
             {
-                output.Add(dto.ToInterview(process));
+                throw new Exception("context not found");
             }
-            return output;
+            var interview = _context.Interviews.Find(id) ?? 
+                throw new Exception("Interview not found");
+            _context.Interviews.Remove(interview);
+            await _context.SaveChangesAsync();
+
+            return;
         }
-        private ProposedData ProposalConverter(ProposedDataDTO proposal, MatchingProcess process)
+        public async Task DeleteContract(Guid id)
         {
-            return new ProposedData
+            if (_context.Contracts == null)
             {
-                Id = proposal.Id,
-                Date = proposal.Date,
-                Succeeded = proposal.Succeeded,
-                MatchingProcessId = process.Id,
-                MatchingProcess = process,
-            };
+                throw new Exception("context not found");
+            }
+            var contract = _context.Contracts.Find(id) ?? 
+                throw new Exception("Contract not found");
+            _context.Contracts.Remove(contract);
+            await _context.SaveChangesAsync();
+
+            return;
         }
     }
 }

@@ -71,21 +71,88 @@ namespace talenthubBE.Controllers
             }
             return Ok(response);
         }
-
-        [HttpPatch("/api/deleteentries")]
-        public async Task<ActionResult<MatchingProcessDTO>> EditMatchingProcess(EditProcessRequest request)
+        [HttpPatch("interviews/{processId}")]
+        public async Task<ActionResult<MatchingProcessDTO>> PatchInterview(Guid processId, InterviewDataDTO request)
         {
-            MatchingProcessDTO? response = await _repository.EditProcess(request);
-            if(response == null)
+            try
             {
-                return NotFound();
+                MatchingProcessDTO? response = await _repository.PatchInterview(processId, request);
+                return Ok(response);
             }
-            return Ok(response);
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        [HttpPatch("contracts/{processId}")]
+        public async Task<ActionResult<MatchingProcessDTO>> PatchContract(Guid processId, ContractDataDTO request)
+        {
+            try
+            {
+                MatchingProcessDTO? response = await _repository.PatchContract(processId, request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        [HttpPatch("proposals/{processId}")]
+        public async Task<ActionResult<MatchingProcessDTO>> PatchProposals(Guid processId, ProposedDataDTO request)
+        {
+            try
+            {
+                MatchingProcessDTO? response = await _repository.PatchProposed(processId, request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         // DELETE: api/MatchingProcess/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMatchingProcess(Guid id)
+        {
+            try
+            {
+                await _repository.DeleteProcess(id);
+            }
+            catch (Exception e)
+            {
+                return NotFound(new {message = e.Message});
+            }
+            return NoContent();
+        }
+        [HttpDelete("proposals/{id}")]
+        public async Task<IActionResult> DeleteProposal(Guid id)
+        {
+            try
+            {
+                await _repository.DeleteProposal(id);
+            }
+            catch (Exception e)
+            {
+                return NotFound(new {message = e.Message});
+            }
+            return NoContent();
+        }
+        [HttpDelete("interviews/{id}")]
+        public async Task<IActionResult> DeleteInterviews(Guid id)
+        {
+            try
+            {
+                await _repository.DeleteInterview(id);
+            }
+            catch (Exception e)
+            {
+                return NotFound(new {message = e.Message});
+            }
+            return NoContent();
+        }
+        [HttpDelete("contracts/{id}")]
+        public async Task<IActionResult> DeleteContract(Guid id)
         {
             try
             {
