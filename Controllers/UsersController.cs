@@ -24,8 +24,9 @@ namespace talenthubBE.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers(String orgId)
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
         {
+            string orgId = ControllerHelper.OrgIdFinder(User);
             IEnumerable<UserDTO>? response = await _repository.GetAllUsers(orgId);
             if(response == null)
             {
@@ -144,11 +145,11 @@ namespace talenthubBE.Controllers
 
         [HttpPatch("/api/users/upgrade")]
         [Authorize("create:admin")]
-        public async Task<ActionResult> PatchUserToAdmin(String userId, String role)
+        public async Task<ActionResult> PatchUserToAdmin(UpgradeUserRequest request)
         {
             try
             {
-                await _repository.UpgradeUser(userId, role);
+                await _repository.UpgradeUser(request.UserId, request.Role);
                 return Ok();
             }
             catch (Exception e)
