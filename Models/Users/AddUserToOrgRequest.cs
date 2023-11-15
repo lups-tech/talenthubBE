@@ -9,10 +9,10 @@ namespace talenthubBE.Models.Users
     public class AddUserToOrgRequest
     {
         [Required]
-        public string Email {get; set;}
+        public required string Email {get; set;}
         [Required]
-        public string Role {get; set;}
+        public required string Role {get; set;}
         [Required]
-        public string Name {get; set;}
+        public required string Name {get; set;}
     }
 }
