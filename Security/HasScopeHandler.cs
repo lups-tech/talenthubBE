@@ -8,6 +8,12 @@ namespace talenthubBE.Security
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, HasScopeRequirement requirement)
         {
+            if (context.User.HasClaim(c => c.Type == "permissions" && c.Issuer == requirement.Issuer && c.Value == requirement.Scope))
+            {
+            context.Succeed(requirement);
+            return Task.CompletedTask;
+            }
+            
             if (!context.User.HasClaim(c => c.Type == "scope" && c.Issuer == requirement.Issuer))
                 return Task.CompletedTask;
 

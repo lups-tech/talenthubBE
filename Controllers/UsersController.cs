@@ -115,10 +115,10 @@ namespace talenthubBE.Controllers
 
         [HttpPost("/api/users/register")]
         [Authorize("create:users")]
-        public async Task<ActionResult> PostUserEmail(String email, String role, String name) 
+        public async Task<ActionResult> PostUserEmail(AddUserToOrgRequest request) 
         {
             string orgId = ControllerHelper.OrgIdFinder(User);
-            bool response = await _repository.RegisterUserWithAuth0(orgId, email, role, name);
+            bool response = await _repository.RegisterUserWithAuth0(orgId, request.Email, request.Role, request.Name);
             if (!response)
             {
                 return BadRequest();
