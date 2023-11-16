@@ -5,5 +5,6 @@ namespace talenthubBE.Models
         Negotiating,
         Awaiting,
         Signed,
+        Failed,
     }
 }
