@@ -83,14 +83,9 @@ namespace talenthubBE.Data.Repositories.Process
                 .Include(p => p.Contracts)
                 .SingleAsync<MatchingProcess>(p => p.Id == request.Id);
             
-            if(request.Placed != null)
-            {
-                process.Placed = request.Placed;
-            }
-            if(request.ResultDate != null)
-            {
-                process.ResultDate = request.ResultDate;
-            }
+            process.Placed = request.Placed;
+            process.ResultDate = request.ResultDate;
+         
             await _context.SaveChangesAsync();
             return process.ToMatchingProcessDTO();
         }
