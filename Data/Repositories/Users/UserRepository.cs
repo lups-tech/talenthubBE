@@ -142,7 +142,7 @@ namespace talenthubBE.Data.Repositories.Users
             return true;
         }
         
-        public async Task UpgradeUser(String userId, String role)
+        public async Task UpgradeUser(String userId, String orgId, String role)
         {
             if(!Enum.IsDefined(typeof(Roles), role))
             {
@@ -151,7 +151,7 @@ namespace talenthubBE.Data.Repositories.Users
             String roleId = GetRoleId(role);
 
             HttpClient client = new(); 
-            Uri uri = new($"{_configuration["Auth0:Domain"]}api/v2/users/{userId}/roles");
+            Uri uri = new($"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/members/{userId}/roles");
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
             client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");

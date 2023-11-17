@@ -147,9 +147,10 @@ namespace talenthubBE.Controllers
         [Authorize("create:admin")]
         public async Task<ActionResult> PatchUserToAdmin(UpgradeUserRequest request)
         {
+            string orgId = ControllerHelper.OrgIdFinder(User);
             try
             {
-                await _repository.UpgradeUser(request.UserId, request.Role);
+                await _repository.UpgradeUser(request.UserId, orgId, request.Role);
                 return Ok();
             }
             catch (Exception e)
