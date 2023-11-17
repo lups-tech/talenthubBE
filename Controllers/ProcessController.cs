@@ -156,7 +156,7 @@ namespace talenthubBE.Controllers
         {
             try
             {
-                await _repository.DeleteProcess(id);
+                await _repository.DeleteContract(id);
             }
             catch (Exception e)
             {
