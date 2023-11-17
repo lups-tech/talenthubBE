@@ -10,17 +10,17 @@ namespace talenthubBE.Data.Repositories.Users
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<UserDTO>?> GetAllUsers(String orgId);
-        Task<UserDTO?> GetUser(String id);
-        Task<IEnumerable<Auth0User>?> GetAuth0Sales(String orgId);
-        Task<IEnumerable<Auth0User>?> GetAuth0Admins(String orgId);
-        Task<UserDTO?> PutUser(String id, User User);
-        Task<bool> RegisterUserWithAuth0(String orgId, String email, String role, String name);
-        Task UpgradeUser(String userId, String role);
-        Task EditUser(String userId, EditUserRequest request);
-        Task EditPassword(String userId, EditPasswordRequest request);
-        Task<UserDTO?> PostUser(String userId, String orgId);
-        Task DeleteUser(String id);
+        Task<IEnumerable<UserDTO>?> GetAllUsers(string orgId);
+        Task<UserDTO?> GetUser(string id);
+        Task<IEnumerable<Auth0User>?> GetAuth0Sales(string orgId);
+        Task<IEnumerable<Auth0User>?> GetAuth0Admins(string orgId);
+        Task<UserDTO?> PutUser(string id, User User);
+        Task<bool> RegisterUserWithAuth0(string orgId, string email, string role, string name);
+        Task UpgradeUser(string userId, string orgId, string role);
+        Task EditUser(string userId, EditUserRequest request);
+        Task EditPassword(string userId, EditPasswordRequest request);
+        Task<UserDTO?> PostUser(string userId, string orgId);
+        Task DeleteUser(string id);
         Task<UserDTO?> AddUserDeveloper(UserDeveloperRequest request);
         Task<bool> DeleteUserDeveloper(UserDeveloperRequest request);
         Task<UserDTO?> AddUserJob(UserJobRequest request);
