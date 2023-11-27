@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using talenthubBE.Data;
+using talenthubBE.Helpers;
 using talenthubBE.Models.Skills;
 
 namespace talenthubBE.Controllers
@@ -97,12 +98,13 @@ namespace talenthubBE.Controllers
         [HttpPost("/scraper")]
          public async Task<ActionResult<SkillScraperResponse>> ScrapeSkills([FromBody] SkillScraperRequest text)
         {
+            string orgId = ControllerHelper.OrgIdFinder(User);
             IEnumerable<SkillDTO> response = await _repository.ScrapeSkills(text);
             if(response.Count() < 0)
             {
                 return NoContent();
             }
-            SkillScraperResponse devMatch = await _repository.SkillMatchDevs(response);
+            SkillScraperResponse devMatch = await _repository.SkillMatchDevs(response, orgId);
             
             return Ok(devMatch);
         }
