@@ -98,6 +98,7 @@ builder.Services.AddAuthorization(options =>
     ));
 });
 
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IJobsRepository, JobsRepository>();
 builder.Services.AddScoped<ISkillsRepository, SkillsRepository>();
 builder.Services.AddScoped<IDevelopersRepository, DevelopersRepository>();

@@ -17,10 +17,12 @@ namespace talenthubBE.Data.Repositories.Users
     {
         private readonly MvcDataContext _context;
         private readonly IConfiguration _configuration;
-        public UserRepository(MvcDataContext context, IConfiguration configuration)
+        private readonly IHttpClientFactory _httpClientFactory;
+        public UserRepository(MvcDataContext context, IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _context = context;
             _configuration = configuration;
+            _httpClientFactory = httpClientFactory;
         }
         public async Task<IEnumerable<UserDTO>?> GetAllUsers(string orgId)
         {
@@ -111,7 +113,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             String roleId = GetRoleId(role);
 
-            HttpClient client = new(); 
+            HttpClient client = _httpClientFactory.CreateClient();
             Uri uri = new($"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/invitations");
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
@@ -150,7 +152,7 @@ namespace talenthubBE.Data.Repositories.Users
             }
             String roleId = GetRoleId(role);
 
-            HttpClient client = new(); 
+            HttpClient client = _httpClientFactory.CreateClient();
             Uri uri = new($"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/members/{userId}/roles");
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
@@ -169,7 +171,7 @@ namespace talenthubBE.Data.Repositories.Users
         }
         public async Task EditUser(String userId, EditUserRequest request)
         {
-            HttpClient client = new();
+            HttpClient client = _httpClientFactory.CreateClient();
             string uri = $"{_configuration["Auth0:Domain"]}api/v2/users/{userId}";
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
@@ -179,7 +181,7 @@ namespace talenthubBE.Data.Repositories.Users
         }
         public async Task EditPassword(String userId, EditPasswordRequest request)
         {
-            HttpClient client = new();
+            HttpClient client = _httpClientFactory.CreateClient();;
             string uri = $"{_configuration["Auth0:Domain"]}api/v2/users/{userId}";
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
@@ -322,7 +324,7 @@ namespace talenthubBE.Data.Repositories.Users
         }
         private async Task<String?> GetManagementToken()
         {
-            HttpClient client = new();
+            HttpClient client = _httpClientFactory.CreateClient();
             Uri uri = new($"{_configuration["Auth0:Domain"]}oauth/token");
             var content = new FormUrlEncodedContent(new[] 
             {
@@ -348,7 +350,7 @@ namespace talenthubBE.Data.Repositories.Users
         }
         private async Task<IEnumerable<Auth0User>?> GetAuth0Users(string orgId)
         {
-            HttpClient client = new();
+            HttpClient client = _httpClientFactory.CreateClient();
             string uri = $"{_configuration["Auth0:Domain"]}api/v2/organizations/{orgId}/members";
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await GetManagementToken()}");
             var response = await client.GetAsync(uri);
