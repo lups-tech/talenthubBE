@@ -4,6 +4,59 @@ This repository forms part of a mob-programming project. The overall project is 
 
 The frontend for this project can be found [here](https://github.com/lups-tech/jobMatches).
 
+## Start-Up
+This project is built using Auth0. Before running this repository a number of secret variables will need to be set, with some relating to Auth0 settings that will need to be configured within Auth0. The database is set up for PostGreSQL (so to connect to a different database type, an amendment would be needed in the Program.cs file. 
+
+### Auth0 Setup
+
+A M2M Application should be set up for the frontend, along with an M2M application with permission to access the management API and an Auth0 API should be set up for the backend.
+
+The M2M frontend application should be configured to allow login and logout from and to the frontend urls and authorized to access the backend API. 
+
+The Auth0 backend API should include the following permissions to allow the role based authentication checks to work correctly (with the frontend M2M authorized to access them) - 
+
+```create:users``` 
+
+```create:admin```
+
+The management API M2M application requires the following permissions - 
+
+```read:client_grants``` 
+```update:client_grants``` 
+```update:users``` 
+```update:users_app_metadata```
+```read:roles``` 
+```create:organization_members``` 
+```create:organization_member_roles``` 
+```create:organization_connections``` 
+```create:organization_invitations``` 
+```read:organization_invitations``` 
+```read:organization_members``` 
+```read:organization_connections```  
+```read:client_credentials``` 
+```create:client_credentials``` 
+```update:client_credentials``` 
+```delete:client_credentials``` 
+
+### Variables
+The following variables should be set using dotnet secrets.
+
+Policy_url = The local host url you use to connect in development (eg. http://127.0.0.1:5173 to connect on port 5173)
+ConnectionString = The database connection string
+Auth0:ManagementClientID = The Id for the M2M application authorized to access the Management API
+Auth0:ManagementAPI = Your Auth0 domain (not including ```https://```, ending in ```.com```)
+Auth0:Domain = Your Auth0 domain (including ```https://```, ending in ```.com```)
+Auth0:ClientSecret = Client Secrent from the frontend M2M application.
+Auth0:ClientId = Id for the frontend M2M application.
+Auth0:Audience = The Audience assigned to your backend project in Auth0 (the Auth0 API)
+
+### Final Steps
+Once the dotnet secrets have been entered, the program will run with the command 
+
+```dotnet run ```
+
+The endpoints can be explored via Swagger using the url assigned as ```(Your Policy Url)/swagger - eg. http://127.0.0.1:5173/swagger```
+
 ## The Database
 This backend is connected to a project hosted on Supabase. The project is therefore based on a PostgreSQL database.
 
