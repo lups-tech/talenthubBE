@@ -37,4 +37,4 @@ We are approaching this project with an agile approach, consisting of 1 week spr
 ~~Authorization and Authentication - to allow for multiple companies to use the product, with their own private lists of developers (user authorization and authentication is now in place with third party log-in via google, as well as email and password).~~(Now added)
 ~~The ability to save jobs to your account, to allow for ease of access to those details during hiring processes, or should a developer become available.~~(Now added)
 ~~Easier editing of existing developers.~~(Now added)
-- Potential for a "process" entity is being discussed, that would allow for tracking of active recruitment processes. Implementation of this is currently being agreed upon.
+~~- Potential for a "process" entity is being discussed, that would allow for tracking of active recruitment processes. Implementation of this is currently being agreed upon.~~(Now added)
