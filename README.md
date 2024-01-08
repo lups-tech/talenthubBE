@@ -55,7 +55,9 @@ Once the dotnet secrets have been entered, the program will run with the command
 
 ```dotnet run ```
 
-The endpoints can be explored via Swagger using the url assigned as ```(Your Policy Url)/swagger - eg. http://127.0.0.1:5173/swagger```
+The endpoints can be explored via Swagger using the url assigned as (Your Policy Url)/swagger - eg. 
+
+```http://127.0.0.1:5173/swagger```
 
 ## The Database
 This backend is connected to a project hosted on Supabase. The project is therefore based on a PostgreSQL database.
