@@ -67,7 +67,7 @@ Once the dotnet secrets have been entered, the program will run with the command
 
 To create the database tables and relationships via the backend, the following commands should be used: 
 
-```dotnet ef migrations add initialCreate```  (initialCreate can be changed to any name for the migration you choose)
+```dotnet ef migrations add initialCreate```  ("initialCreate" can be changed to any name for the migration you choose)
 
 followed by
 
