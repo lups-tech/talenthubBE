@@ -38,6 +38,16 @@ The management API M2M application requires the following permissions -
 ```update:client_credentials``` 
 ```delete:client_credentials``` 
 
+An organization can then be set up for each "client" of the talenthub service. The organizations should have Sales and Admin roles assigned, with the... 
+
+```create:users``` 
+
+```create:admin```
+
+...permissions assigned to the Admin. This will allow Admin users to access the admin controls in their user profile, allowing them to send email invites to new users and upgrade existing users to admins.
+
+Remember to change the first admin user to an Admin in the database.
+
 ### Variables
 The following variables should be set using dotnet secrets.
 
@@ -54,6 +64,16 @@ Auth0:Audience = The Audience assigned to your backend project in Auth0 (the Aut
 Once the dotnet secrets have been entered, the program will run with the command 
 
 ```dotnet run ```
+
+To create the database tables and relationships via the backend, the following commands should be used: 
+
+```dotnet ef migrations add initialCreate```  (initialCreate can be changed to any name for the migration you choose)
+
+followed by
+
+```dotnet ef database update```
+
+This will write the database tables according to the relationships and fields outlined in the models and dbContext files.
 
 The endpoints can be explored via Swagger using the url assigned as (Your Policy Url)/swagger - eg. 
 
